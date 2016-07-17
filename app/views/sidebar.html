@@ -1,0 +1,26 @@
+<div ng-controller="SidebarCtrl as sidebar">
+    <md-sidenav md-component-id="left" class="md-sidenav-left" md-is-open="sidebar.isOpen" md-disable-backdrop="false">
+        <md-toolbar>
+            <h1 class="md-toolbar-tools">Panels</h1>
+        </md-toolbar>
+        <md-content>
+            <md-list>
+                <!-- <md-list-item class="md-3-line">
+                    <div class="md-list-item-text">
+
+                    </div> -->
+                </md-list-item>
+                <md-list-item class="md-2-line">
+                    <div class="md-list-item-text">
+                        <p>{{ sidebar.settings.online }}</p>
+                    </div>
+                </md-list-item>
+                <md-list-item class="md-2-line">
+                    <div class="md-list-item-text">
+
+                    </div>
+                </md-list-item>
+            </md-list>
+        </md-content>
+    </md-sidenav>
+</div>

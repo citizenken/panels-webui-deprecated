@@ -1,0 +1,23 @@
+{
+  "name": "Hello World!",
+  "description": "My first Chrome App.",
+  "version": "0.1",
+  "manifest_version": 2,
+ "oauth2": {
+    "client_id": "537455563422-d0l06urs86qsfshsbehllp7p8pcstkqf.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/userinfo.profile",
+      "https://www.googleapis.com/auth/plus.me"
+    ]
+  },
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  },
+  "permissions": [
+    "identity",
+    "storage",
+    "https://panels-fd87e.firebaseio.com/"
+  ]
+}
