@@ -16,7 +16,7 @@ angular.module('panelsApp')
         $rootScope.$emit('onlineStatusChange', service.onLine);
       }
     };
-
+    service.updateOnlineStatus();
     window.addEventListener('online',  service.updateOnlineStatus);
     window.addEventListener('offline', service.updateOnlineStatus);
 

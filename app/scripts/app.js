@@ -19,7 +19,7 @@ angular
     'ui.codemirror',
     'ui.layout',
     'ngLodash',
-    'LocalStorageModule'
+    'firebase'
   ])
   .constant('appConfig', {
     chromeApp: ((window.chrome && window.chrome.app && window.chrome.app.runtime) !== undefined)
@@ -27,9 +27,14 @@ angular
   .run(['lodash', function (lodash) {
     window._ = lodash;
   }])
-  .config(function (localStorageServiceProvider) {
-    localStorageServiceProvider
-      .setPrefix('panelsApp');
+  .config(function () {
+    var config = {
+      apiKey: 'AIzaSyBFM-2jOMfbeB0gOw_Xi2WQkhBg8GTqsIQ',
+      authDomain: 'panels-fd87e.firebaseapp.com',
+      databaseURL: 'https://panels-fd87e.firebaseio.com',
+      storageBucket: 'panels-fd87e.appspot.com',
+    };
+    window.firebase.initializeApp(config);
   })
   .config(function ($mdThemingProvider, $mdIconProvider) {
     $mdThemingProvider.theme('red');
@@ -42,16 +47,6 @@ angular
         controller: 'MainCtrl',
         controllerAs: 'main'
       })
-      // .when('/about', {
-      //   templateUrl: 'views/about.html',
-      //   controller: 'AboutCtrl',
-      //   controllerAs: 'about'
-      // })
-      // .when('/main', {
-      //   templateUrl: 'views/main.html',
-      //   controller: 'MainCtrl',
-      //   controllerAs: 'main'
-      // })
       .otherwise({
         redirectTo: '/'
       });

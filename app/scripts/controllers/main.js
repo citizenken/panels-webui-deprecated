@@ -8,8 +8,9 @@
  * Controller of the panelsApp
  */
 angular.module('panelsApp')
-  .controller('MainCtrl', [ 'onlineStatus', '$rootScope', '$scope', 'fileService', '$timeout',
-    function (onlineStatus, $rootScope, $scope, fileService, $timeout) {
+  .controller('MainCtrl', [ 'onlineStatus', '$rootScope', '$scope', 'fileService', '$timeout', 'firebaseService',
+    'lodash',
+    function (onlineStatus, $rootScope, $scope, fileService, $timeout, firebaseService, lodash) {
     var ctrl = this;
     ctrl.editorOptions = {
         lineWrapping : true,
@@ -23,17 +24,35 @@ angular.module('panelsApp')
     ctrl.addNewFile = addNewFile;
     ctrl.files = null;
     ctrl.changeFile = changeFile;
+    ctrl.fireBaseAuth = null;
     // ctrl.theirs = null,
     // ctrl.dm = new window.diff_match_patch(); // jshint ignore:line
 
     function init () {
         if (onlineStatus.status) {
-            console.log('online');
+            firebaseService.loadUserRecords()
+            .then(function () {
+                return firebaseService.getAuthorFullFiles();
+            }).then(function (files) {
+                if (files.length > 0) {
+                    loadFiles(files, true, firebaseService.userRecord);
+                } else {
+                    loadFiles(null, true, firebaseService.userRecord);
+                }
+                firebaseService.addLocalFiles();
+            })
+            .catch(function (error) {
+                loadFiles(null, true);
+            });
         } else {
-            fileService.loadFiles(null, true);
-            ctrl.mine = fileService.currentFile;
-            ctrl.files = fileService.files;
+            loadFiles(null, true);
         }
+    }
+
+    function loadFiles (files, setCurrent, profile) {
+        fileService.loadFiles(files, true, profile);
+        ctrl.mine = fileService.currentFile;
+        ctrl.files = fileService.files;
     }
 
     function openPanel () {
@@ -62,9 +81,13 @@ angular.module('panelsApp')
     }
 
     function addNewFile () {
-        fileService.addNewFile();
-        ctrl.files = fileService.files;
-        ctrl.mine = fileService.currentFile;
+        fileService.addNewFile(firebaseService.userRecord);
+        // ctrl.files = fileService.files;
+        // ctrl.mine = fileService.currentFile;
+        // firebaseService.getRef();
+        firebaseService.promptGoogleAuth();
+        // fileService.currentFile.author = firebaseService.userProfile.uid;
+        // firebaseService.addFile(fileService.currentFile);
     }
 
     function changeFile (fileIndex) {
@@ -73,15 +96,20 @@ angular.module('panelsApp')
         ctrl.files = fileService.files;
     }
 
-    $scope.$watch(function () {
-        var watched = angular.copy(ctrl.mine);
-        delete watched['modifiedOn'];
-        return watched;
-    }, function (newValue, oldValue) {
-        if (newValue !== null) {
-            handleContentChange(newValue, oldValue);
-        }
-    }, true);
+    // $scope.$watch(function () {
+    //     var watched = angular.copy(ctrl.mine);
+
+    //     if (watched) {
+    //         delete watched['modifiedOn'];
+    //     }
+    //     return watched;
+    // }, function (newValue, oldValue) {
+    //     if (newValue !== null) {
+    //         handleContentChange(newValue, oldValue);
+    //     }
+    // });
+
+    // $rootScope.$on('authStateChange', );
 
     ctrl.init();
 
