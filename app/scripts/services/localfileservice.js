@@ -92,10 +92,6 @@ angular.module('panelsApp')
         return converted;
       },
 
-
-
-
-
       addNewFile: function (profile) {
         var newFile = this.createNewFile(profile);
         this.files[newFile.id] = newFile;
@@ -104,9 +100,6 @@ angular.module('panelsApp')
       },
 
       saveCurrentFile: function (onlineStatus) {
-        // Make sure that the first file in the list of files is the current file
-        // this.files.shift();
-        // this.files.unshift(this.currentFile);
         if (onlineStatus) {
           console.log('save online');
         } else {
