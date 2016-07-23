@@ -19,7 +19,8 @@ angular
     'ui.codemirror',
     'ui.layout',
     'ngLodash',
-    'firebase'
+    'firebase',
+    'LocalStorageModule'
   ])
   .constant('appConfig', {
     chromeApp: ((window.chrome && window.chrome.app && window.chrome.app.runtime) !== undefined)

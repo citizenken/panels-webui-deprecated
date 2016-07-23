@@ -8,9 +8,9 @@
  * Controller of the panelsApp
  */
 angular.module('panelsApp')
-  .controller('MainCtrl', [ 'onlineStatus', '$rootScope', '$scope', 'fileService', '$timeout', 'firebaseService',
+  .controller('MainCtrl', [ 'onlineStatus', '$rootScope', '$scope', 'localFileService', '$timeout', 'firebaseService',
     'lodash',
-    function (onlineStatus, $rootScope, $scope, fileService, $timeout, firebaseService, lodash) {
+    function (onlineStatus, $rootScope, $scope, localFileService, $timeout, firebaseService, lodash) {
     var ctrl = this;
     ctrl.editorOptions = {
         lineWrapping : true,
@@ -29,30 +29,30 @@ angular.module('panelsApp')
     // ctrl.dm = new window.diff_match_patch(); // jshint ignore:line
 
     function init () {
-        if (onlineStatus.status) {
-            firebaseService.loadUserRecords()
-            .then(function () {
-                return firebaseService.getAuthorFullFiles();
-            }).then(function (files) {
-                if (files.length > 0) {
-                    loadFiles(files, true, firebaseService.userRecord);
-                } else {
-                    loadFiles(null, true, firebaseService.userRecord);
-                }
-                firebaseService.addLocalFiles();
-            })
-            .catch(function (error) {
-                loadFiles(null, true);
-            });
-        } else {
-            loadFiles(null, true);
-        }
+        // if (onlineStatus.status === false) {
+        //     firebaseService.loadUserRecords()
+        //     .then(function () {
+        //         return firebaseService.getAuthorFullFiles();
+        //     }).then(function (files) {
+        //         if (files.length > 0) {
+        //             loadFiles(files, true, firebaseService.userRecord);
+        //         } else {
+        //             loadFiles(null, true, firebaseService.userRecord);
+        //         }
+        //         firebaseService.addLocalFiles();
+        //     })
+        //     .catch(function (error) {
+        //         loadFiles(null, true);
+        //     });
+        // } else {
+            loadLocalFiles();
+        // }
     }
 
-    function loadFiles (files, setCurrent, profile) {
-        fileService.loadFiles(files, true, profile);
-        ctrl.mine = fileService.currentFile;
-        ctrl.files = fileService.files;
+    function loadLocalFiles () {
+        localFileService.loadFiles();
+        ctrl.mine = localFileService.currentFile;
+        ctrl.files = localFileService.files;
     }
 
     function openPanel () {
@@ -74,40 +74,39 @@ angular.module('panelsApp')
 
         ctrl.typeDelayTimer = $timeout(function () {
             if (!angular.equals(newValue, oldValue)) {
-                fileService.updateCurrentFileContent(newValue);
-                ctrl.mine = fileService.currentFile;
+                localFileService.updateCurrentFileContent(newValue);
+                ctrl.mine = localFileService.currentFile;
             }
         }, 500);
     }
 
     function addNewFile () {
-        fileService.addNewFile(firebaseService.userRecord);
-        // ctrl.files = fileService.files;
-        // ctrl.mine = fileService.currentFile;
+        localFileService.addNewFile(firebaseService.userRecord);
+        // ctrl.files = localFileService.files;
+        // ctrl.mine = localFileService.currentFile;
         // firebaseService.getRef();
         firebaseService.promptGoogleAuth();
-        // fileService.currentFile.author = firebaseService.userProfile.uid;
-        // firebaseService.addFile(fileService.currentFile);
+        // localFileService.currentFile.author = firebaseService.userProfile.uid;
+        // firebaseService.addFile(localFileService.currentFile);
     }
 
-    function changeFile (fileIndex) {
-        fileService.changeCurrentFile(fileIndex);
-        ctrl.mine = fileService.currentFile;
-        ctrl.files = fileService.files;
+    function changeFile (fileId) {
+        localFileService.changeCurrentFile(fileId);
+        ctrl.mine = localFileService.currentFile;
+        ctrl.files = localFileService.files;
     }
 
-    // $scope.$watch(function () {
-    //     var watched = angular.copy(ctrl.mine);
-
-    //     if (watched) {
-    //         delete watched['modifiedOn'];
-    //     }
-    //     return watched;
-    // }, function (newValue, oldValue) {
-    //     if (newValue !== null) {
-    //         handleContentChange(newValue, oldValue);
-    //     }
-    // });
+    $scope.$watch(function () {
+        if (ctrl.mine) {
+            return ctrl.mine;
+        } else {
+            return null;
+        }
+    }, function (newValue, oldValue) {
+        if (newValue !== null) {
+            handleContentChange(newValue, oldValue);
+        }
+    }, true);
 
     // $rootScope.$on('authStateChange', );
 

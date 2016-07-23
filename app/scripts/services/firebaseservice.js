@@ -9,8 +9,7 @@
  */
 angular.module('panelsApp')
   .factory('firebaseService', ['$window', '$firebaseAuth', '$firebaseObject', '$firebaseArray', '$q', 'lodash',
-    'fileService',
-    function ($window, $firebaseAuth, $firebaseObject, $firebaseArray, $q, lodash, fileService) {
+    function ($window, $firebaseAuth, $firebaseObject, $firebaseArray, $q, lodash) {
 
     var auth = $firebaseAuth(),
         rootRef = $window.firebase.database();
@@ -193,14 +192,14 @@ angular.module('panelsApp')
         });
       },
 
-      addLocalFiles: function () {
-        var unsynced = lodash.filter(fileService.files, ['synced', false]),
-            self = this;
-        lodash.forEach(unsynced, function (value, key) {
-          fileService.updateCurrentFileProps({synced: true});
-          self.addFile(value);
-        });
-      },
+      // addLocalFiles: function () {
+      //   var unsynced = lodash.filter(fileService.files, ['synced', false]),
+      //       self = this;
+      //   lodash.forEach(unsynced, function (value, key) {
+      //     fileService.updateCurrentFileProps({synced: true});
+      //     self.addFile(value);
+      //   });
+      // },
 
       loadUserRecords: function () {
         var self = this,

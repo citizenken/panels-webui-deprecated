@@ -17,7 +17,8 @@
     "panels": "../panels_package/",
     "ng-lodash": "^0.5.0",
     "Typo.js": "*",
-    "google-diff-match-patch": "^0.1.0"
+    "google-diff-match-patch": "^0.1.0",
+    "angular-local-storage": "^0.2.7"
   },
   "devDependencies": {
     "angular-mocks": "^1.4.0"

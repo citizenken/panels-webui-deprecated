@@ -9,7 +9,7 @@
     <section flex class="container full-height">
         <ul>
             <li ng-repeat="file in main.files track by $index">
-                <button type="button" ng-click="main.changeFile($index)">{{ file.id }}</li>
+                <button type="button" ng-click="main.changeFile(file.id)">{{ file.id }}</li>
         </ul>
     </section>
     <section flex class="container full-height">

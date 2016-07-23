@@ -14,7 +14,7 @@ angular.module('panelsApp')
         function renderScript (event, newValue, oldValue) {
             var script = new Script('comicbook'), //jshint ignore:line
                 renderer = new Renderer(script, element); //jshint ignore:line
-            if (newValue !== null) {
+            if (newValue.content !== null) {
                 element.empty();
                 script.fromBlob(newValue.content);
                 renderer.renderElements();
