@@ -20,7 +20,8 @@ angular
     'ui.layout',
     'ngLodash',
     'firebase',
-    'LocalStorageModule'
+    'LocalStorageModule',
+    'puElasticInput'
   ])
   .constant('appConfig', {
     chromeApp: ((window.chrome && window.chrome.app && window.chrome.app.runtime) !== undefined)
@@ -40,6 +41,7 @@ angular
   .config(function ($mdThemingProvider, $mdIconProvider) {
     $mdThemingProvider.theme('red');
     $mdIconProvider.iconSet('navigation', 'images/icons/sets/svg-sprite-navigation.svg', 24);
+    $mdIconProvider.iconSet('content', 'images/icons/sets/svg-sprite-content.svg', 24);
   })
   .config(function ($routeProvider) {
     $routeProvider

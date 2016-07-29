@@ -12,22 +12,26 @@ angular.module('panelsApp')
    function ($rootScope, appConfig, lodash, utilityService, userService) {
     var service = {
       currentFile: null,
-      files: null,
+      files: {},
 
       loadFiles: function () {
         var files = this.getLocalFiles();
-        if (!files) {
+        if (lodash.keys(files).length === 0) {
           var newFile = this.createNewFile();
           files = {};
           files[newFile.id] = newFile;
           localStorage.setItem('panelsFiles', JSON.stringify(files));
         }
 
-        var lastModified = lodash.orderBy(lodash.toArray(files), 'modifiedOn', 'desc')[0];
 
+        angular.forEach(files, function (value, key) {
+          this.files[key] = value;
+        }, this);
+
+        var lastModified = lodash.orderBy(lodash.toArray(this.files), 'modifiedOn', 'desc')[0];
         this.currentFile = lastModified;
-        this.files = files;
-        return files;
+
+        return this.files;
       },
 
       getLocalFiles: function () {
@@ -44,18 +48,19 @@ angular.module('panelsApp')
         var id = utilityService.generateRandomId(20),
             file = {
               id: id,
-              name: null,
+              title: undefined,
               createdOn: Date.now(),
               modifiedOn: Date.now(),
               author: null,
               content: null,
-              synced: false
+              synced: false,
+              history: []
             };
 
         var profile = userService.getUserProfile();
         if (profile) {
           file.author = {
-            username: profile.username,
+            username: 'foo',
             id: profile.id
           };
         }
@@ -70,10 +75,9 @@ angular.module('panelsApp')
             var toSave = {};
             angular.forEach(this.files, function (value) {
               var file = value;
-              if (lodash.has(file, '$id')) {
-                file = this.convertFirebaseFile(file);
+              if (!lodash.has(file, '$id')) {
+                toSave[file.id] = file;
               }
-              toSave[file.id] = file;
             }, this);
             localStorage.setItem('panelsFiles', JSON.stringify(toSave));
         }

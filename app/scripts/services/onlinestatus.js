@@ -10,9 +10,9 @@
 angular.module('panelsApp')
   .factory('onlineStatus', ['$rootScope', function ($rootScope) {
     var service = {
-      status: null,
+      online: null,
       updateOnlineStatus: function () {
-        this.status = navigator.onLine;
+        this.online = navigator.onLine;
         $rootScope.$emit('onlineStatusChange', service.onLine);
       }
     };

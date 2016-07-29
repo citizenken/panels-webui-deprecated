@@ -43,6 +43,7 @@ module.exports = function(config) {
       'bower_components/Typo.js/typo/typo.js',
       'bower_components/google-diff-match-patch/diff_match_patch.js',
       'bower_components/angular-local-storage/dist/angular-local-storage.js',
+      'bower_components/angular-elastic-input/dist/angular-elastic-input.min.js',
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
       'app/scripts/**/*.js',

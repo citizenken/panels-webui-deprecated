@@ -9,7 +9,8 @@
  */
 angular.module('panelsApp')
   .factory('firebaseService', ['$window', '$firebaseAuth', '$firebaseObject', '$firebaseArray', '$q', 'lodash',
-    function ($window, $firebaseAuth, $firebaseObject, $firebaseArray, $q, lodash) {
+    'userService', 'localFileService',
+    function ($window, $firebaseAuth, $firebaseObject, $firebaseArray, $q, lodash, userService, localFileService) {
 
     var auth = $firebaseAuth(),
         rootRef = $window.firebase.database();
@@ -46,11 +47,7 @@ angular.module('panelsApp')
             userRef = $firebaseObject(this.users.child(this.userProfile.uid)),
             deferred = $q.defer();
         this.userRef = userRef;
-        userRef.$loaded(function (record) {
-          self.userRecord = record;
-          deferred.resolve(record);
-        });
-        return deferred.promise;
+        return userRef.$loaded();
       },
 
       getRef: function (refString, array) {
@@ -61,11 +58,11 @@ angular.module('panelsApp')
         }
       },
 
-      getAuthorFullFiles: function () {
+      getAuthorFullFiles: function (profile) {
         var self = this,
-            files = [];
-        lodash.forEach(self.userRecord.files, function (value, key) {
-          files.push($firebaseObject(self.files.child(key)).$loaded());
+            files = {};
+        lodash.forEach(userService.getUserProfile().files, function (value, key) {
+          files[key] = $firebaseObject(self.files.child(key)).$loaded();
         });
 
         return $q.all(files);
@@ -79,7 +76,7 @@ angular.module('panelsApp')
         return deferred.promise;
       },
 
-      addFile: function (file) {
+      addRemoteFile: function (file) {
         var self = this,
             deferred = $q.defer();
 
@@ -101,6 +98,9 @@ angular.module('panelsApp')
         })
         .then(function (success) {
           deferred.resolve(success);
+        })
+        .catch(function (error) {
+          console.log(error);
         });
 
 
@@ -143,15 +143,28 @@ angular.module('panelsApp')
       },
 
       updateFileRef: function (file) {
-        var deferred = $q.defer(),
-            fileRec = $firebaseObject(this.files.child(file.id));
+        var deferred = $q.defer(), fileRec;
+
+        if (!lodash.has(file, '$id')) {
+          fileRec = $firebaseObject(this.files.child(file.id));
+        } else {
+          fileRec = file;
+        }
         fileRec.$loaded(function (fileRec) {
           lodash.forEach(file, function (value, key) {
-            fileRec[key] = value;
+            if (value) {
+              fileRec[key] = value;
+            }
           });
-          fileRec.$save().then(function (success) {
+          fileRec.modifiedOn = Date.now();
+          fileRec.$save()
+          .then(function (success) {
             deferred.resolve(success);
-          });
+          })
+          .catch(function (error) {
+            deferred.reject(error);
+          })
+          ;
         });
 
         return deferred.promise;
@@ -192,14 +205,50 @@ angular.module('panelsApp')
         });
       },
 
-      // addLocalFiles: function () {
-      //   var unsynced = lodash.filter(fileService.files, ['synced', false]),
-      //       self = this;
-      //   lodash.forEach(unsynced, function (value, key) {
-      //     fileService.updateCurrentFileProps({synced: true});
-      //     self.addFile(value);
-      //   });
-      // },
+      addNewFileToFiles: function () {
+        var self = this;
+        return this.createNewFile()
+        .then(function (newfile) {
+          localFileService.files[newfile.id] = newfile;
+          return self.loadRemoteFiles(localFileService.files);
+        });
+      },
+
+      syncLocalFile: function (file) {
+        var self = this;
+
+        return this.addRemoteFile(file).
+        then(function (rfile) {
+          return $firebaseObject(rfile).$loaded();
+        })
+        .then(function (rfile) {
+          localFileService.files[rfile.id] = rfile;
+          return self.loadRemoteFiles(localFileService.files);
+        });
+      },
+
+      createNewFile: function () {
+        var newFile = localFileService.createNewFile(),
+            newRemoteFile;
+        return this.addRemoteFile(newFile).
+        then(function (rfile) {
+          return $firebaseObject(rfile).$loaded();
+        });
+      },
+
+      loadRemoteFiles: function (files) {
+        var self = this;
+        if (lodash.keys(files).length > 0) {
+          angular.forEach(files, function (val, key) {
+            localFileService.files[key] = val;
+          });
+        }
+
+        var lastModified = lodash.orderBy(lodash.toArray(localFileService.files), 'modifiedOn', 'desc')[0];
+        localFileService.currentFile = lastModified;
+
+        return localFileService.files;
+      },
 
       loadUserRecords: function () {
         var self = this,
@@ -209,18 +258,19 @@ angular.module('panelsApp')
             if (profile) {
                 return self.getUserRecord()
                 .then(function (record) {
+                    userService.setUserProfile(record);
                     // If a user record exists, use it and sync local files
                     if (record) {
                         deferred.resolve(record);
                     } else {
                         console.log('making new user');
                         // If a user record doesn't exist, create new record and sync local files
-                        self.newUserRef(self.userRecord);
+                        self.newUserRef(userService.getUserProfile());
                         deferred.resolve(record);
                     }
                 });
             } else {
-                deferred.reject();
+                deferred.reject({msg: 'No profile found'});
             }
         });
 

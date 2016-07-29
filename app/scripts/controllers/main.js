@@ -24,39 +24,46 @@ angular.module('panelsApp')
     ctrl.addNewFile = addNewFile;
     ctrl.files = null;
     ctrl.changeFile = changeFile;
+    ctrl.syncFileRemote = syncFileRemote;
     ctrl.fireBaseAuth = null;
+    $scope.mine = null;
     // ctrl.theirs = null,
     // ctrl.dm = new window.diff_match_patch(); // jshint ignore:line
 
     function init () {
-        // if (onlineStatus.status === false) {
-        //     firebaseService.loadUserRecords()
-        //     .then(function () {
-        //         return firebaseService.getAuthorFullFiles();
-        //     }).then(function (files) {
-        //         if (files.length > 0) {
-        //             loadFiles(files, true, firebaseService.userRecord);
-        //         } else {
-        //             loadFiles(null, true, firebaseService.userRecord);
-        //         }
-        //         firebaseService.addLocalFiles();
-        //     })
-        //     .catch(function (error) {
-        //         loadFiles(null, true);
-        //     });
-        // } else {
-            loadLocalFiles();
-        // }
+        localFileService.loadFiles();
+        var fireService = firebaseService;
+        if (onlineStatus.online) {
+            fireService.loadUserRecords()
+            .then(function () {
+                return firebaseService.getAuthorFullFiles();
+            })
+            .then(function (files) {
+                console.log(files);
+                // if (files.length > 0) {
+                firebaseService.loadRemoteFiles(files);
+                loadCtrlFiles();
+
+                // } else {
+                //     loadFiles(null, true, firebaseService.userRecord);
+                // }
+                // firebaseService.addLocalFiles();
+            })
+            .catch(function (error) {
+                // if (error.msg === 'No profile found') {
+                //     // revert to local files
+                //     // loadLocalFiles();
+                // }
+            });
+        }
     }
 
-    function loadLocalFiles () {
-        localFileService.loadFiles();
+    function loadCtrlFiles () {
         ctrl.mine = localFileService.currentFile;
         ctrl.files = localFileService.files;
     }
 
     function openPanel () {
-        console.log(ctrl.mine);
         $rootScope.$emit('openPanel');
     }
 
@@ -65,29 +72,22 @@ angular.module('panelsApp')
         _editor.refresh();
     }
 
-    function handleContentChange (newValue, oldValue) {
-        if (ctrl.typeDelayTimer) {
-            $timeout.cancel(ctrl.typeDelayTimer);
-        }
-
-        $rootScope.$emit('scriptContentChange', newValue, oldValue);
-
-        ctrl.typeDelayTimer = $timeout(function () {
-            if (!angular.equals(newValue, oldValue)) {
-                localFileService.updateCurrentFileContent(newValue);
-                ctrl.mine = localFileService.currentFile;
-            }
-        }, 500);
-    }
-
     function addNewFile () {
-        localFileService.addNewFile(firebaseService.userRecord);
-        // ctrl.files = localFileService.files;
-        // ctrl.mine = localFileService.currentFile;
+        localFileService.addNewFile();
+        // firebaseService.addNewFileToFiles()
+        // .then(function (files) {
+        //     loadCtrlFiles();
+        // });
+        ctrl.files = localFileService.files;
+        ctrl.mine = localFileService.currentFile;
         // firebaseService.getRef();
-        firebaseService.promptGoogleAuth();
+        // firebaseService.promptGoogleAuth();
         // localFileService.currentFile.author = firebaseService.userProfile.uid;
         // firebaseService.addFile(localFileService.currentFile);
+    }
+
+    function syncFileRemote (fileId) {
+        firebaseService.syncLocalFile(localFileService.files[fileId]);
     }
 
     function changeFile (fileId) {
@@ -96,15 +96,55 @@ angular.module('panelsApp')
         ctrl.files = localFileService.files;
     }
 
+    function handleContentChange (newValue, oldValue) {
+        if (ctrl.typeDelayTimer) {
+            $timeout.cancel(ctrl.typeDelayTimer);
+        }
+
+        $rootScope.$emit('scriptContentChange', newValue);
+
+
+        ctrl.typeDelayTimer = $timeout(function () {
+            if (newValue.id === oldValue.id) {
+                if (!newValue.history) {
+                    newValue.history = [];
+                }
+
+                if (newValue.history.length === 20) {
+                    newValue.history.pop();
+                }
+                newValue.history.unshift(oldValue);
+            }
+            if (!angular.equals(newValue)) {
+                if (lodash.has(newValue, '$id')) {
+                    console.log(newValue);
+                    firebaseService.updateFile(newValue);
+                } else {
+                    localFileService.updateCurrentFileContent(newValue);
+                    ctrl.mine = localFileService.currentFile;
+                }
+            }
+        }, 500);
+    }
+
     $scope.$watch(function () {
         if (ctrl.mine) {
-            return ctrl.mine;
+            var props = {};
+            lodash.forEach(ctrl.mine, function (value, key) {
+                if (key.indexOf('$') === -1 && key !== 'history') {
+                    props[key] = value;
+                }
+            });
+            return props;
         } else {
             return null;
         }
     }, function (newValue, oldValue) {
-        if (newValue !== null) {
-            handleContentChange(newValue, oldValue);
+        if (newValue !== null && oldValue !== null) {
+            if (newValue.content !== oldValue.content ||
+                newValue.title !== oldValue.title) {
+                handleContentChange(ctrl.mine, oldValue);
+            }
         }
     }, true);
 

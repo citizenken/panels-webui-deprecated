@@ -1,16 +1,18 @@
 <div ng-include="'./views/sidebar.html'"></div>
-<md-toolbar>
-    <md-button class="md-icon-button md-primary" aria-label="menu" ng-click="main.openPanel()">
-        <md-icon md-svg-icon="navigation:menu"></md-icon>
-    </md-button>
-    <md-button class="md-raised md-button md-ink-ripple" type="button" value="add new" ng-click="main.addNewFile()">Add</md-button>
+<md-toolbar class="md-hue-2">
+    <div class="md-toolbar-tools">
+        <md-button class="md-icon-button" aria-label="menu" ng-click="main.openPanel()">
+            <md-icon md-svg-icon="navigation:menu"></md-icon>
+        </md-button>
+        <md-input-container md-no-float class="md-block" style="width:100%;">
+            <input pu-elastic-input ng-model="main.mine.title" placeholder="Untitled Document" pu-elastic-input-minwidth="171px"></input>
+        </md-input-container>
+    </div>
+
 </md-toolbar>
 <div layout="row" class="layout-container full-height">
     <section flex class="container full-height">
-        <ul>
-            <li ng-repeat="file in main.files track by $index">
-                <button type="button" ng-click="main.changeFile(file.id)">{{ file.id }}</li>
-        </ul>
+
     </section>
     <section flex class="container full-height">
         <ui-codemirror ui-codemirror-opts="main.editorOptions" ng-model="main.mine.content" ui-refresh="true"></ui-codemirror>
