@@ -87,7 +87,10 @@ angular.module('panelsApp')
     }
 
     function syncFileRemote (fileId) {
-        firebaseService.syncLocalFile(localFileService.files[fileId]);
+        firebaseService.syncLocalFile(localFileService.files[fileId])
+        .then(function () {
+            loadCtrlFiles();
+        });
     }
 
     function changeFile (fileId) {

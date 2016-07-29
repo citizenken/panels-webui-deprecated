@@ -57,7 +57,7 @@ angular.module('panelsApp')
               history: []
             };
 
-        var profile = userService.getUserProfile();
+        var profile = userService.getUserRecord();
         if (profile) {
           file.author = {
             username: 'foo',

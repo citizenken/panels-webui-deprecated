@@ -17,6 +17,7 @@ angular.module('panelsApp')
     // Public API here
     return {
       userProfile: null,
+      userRecord: null,
       setUserProfile: function (profile) {
         this.userProfile = profile;
       },
@@ -25,6 +26,12 @@ angular.module('panelsApp')
           this.setUserProfile(this.generateUserProfile());
         }
         return this.userProfile;
+      },
+      setUserRecord: function (userRecord) {
+        this.userRecord = userRecord;
+      },
+      getUserRecord: function () {
+        return this.userRecord;
       },
       generateUserProfile: function () {
         return {

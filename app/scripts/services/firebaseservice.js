@@ -61,7 +61,7 @@ angular.module('panelsApp')
       getAuthorFullFiles: function (profile) {
         var self = this,
             files = {};
-        lodash.forEach(userService.getUserProfile().files, function (value, key) {
+        lodash.forEach(userService.getUserRecord().files, function (value, key) {
           files[key] = $firebaseObject(self.files.child(key)).$loaded();
         });
 
@@ -80,19 +80,19 @@ angular.module('panelsApp')
         var self = this,
             deferred = $q.defer();
 
-        this.fileExists(file).then(function (doesExist) {
+        this.authFileExists(file).then(function (doesExist) {
           if (!doesExist) {
-            return self.updateFileRef(file);
+            return self.updateAuthFileRef(file);
           } else {
-            console.log('This file already exists');
+            console.log('Author already has this file');
           }
         })
-        .then(function (ref) {
-          return self.authFileExists(file).then(function (doesExist) {
+        .then(function (aRef) {
+          return self.fileExists(file).then(function (doesExist) {
             if (!doesExist) {
-              return self.updateAuthFileRef(file);
+              return self.updateFileRef(file);
             } else {
-              console.log('Author already has this file');
+              console.log('This file already exists');
             }
           });
         })
@@ -102,7 +102,6 @@ angular.module('panelsApp')
         .catch(function (error) {
           console.log(error);
         });
-
 
         return deferred.promise;
       },
@@ -198,10 +197,9 @@ angular.module('panelsApp')
             };
 
         users[profile.uid] = newUser;
-        users.$save().then(function(ref) {
-          console.log('New user saved!', ref);
-        }).catch(function(error) {
-          console.log('Error!');
+        return users.$save()
+        .then(function (users) {
+          return $firebaseObject(users).$loaded();
         });
       },
 
@@ -216,6 +214,16 @@ angular.module('panelsApp')
 
       syncLocalFile: function (file) {
         var self = this;
+
+        if (file.author === null ||
+          file.author.id === null ||
+          file.author.username === null) {
+          var userRecord = userService.getUserRecord();
+          file.author = {
+            id: userRecord.id,
+            username: userRecord.username
+          };
+        }
 
         return this.addRemoteFile(file).
         then(function (rfile) {
@@ -256,17 +264,24 @@ angular.module('panelsApp')
         // Check current user authentication
         self.getAuth().then(function (profile) {
             if (profile) {
+                userService.setUserProfile(profile);
                 return self.getUserRecord()
                 .then(function (record) {
-                    userService.setUserProfile(record);
                     // If a user record exists, use it and sync local files
-                    if (record) {
+                    if (lodash.has(record, 'username')) {
+                        userService.setUserRecord(record);
                         deferred.resolve(record);
                     } else {
                         console.log('making new user');
                         // If a user record doesn't exist, create new record and sync local files
-                        self.newUserRef(userService.getUserProfile());
-                        deferred.resolve(record);
+                        self.newUserRef(userService.getUserProfile())
+                        .then(function(users) {
+                          var userRecord = users[profile.uid];
+                          userService.setUserRecord(userRecord);
+                          deferred.resolve(userRecord);
+                        }).catch(function(error) {
+                          console.log('Error saving record');
+                        });
                     }
                 });
             } else {
