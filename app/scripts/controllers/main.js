@@ -9,37 +9,39 @@
  */
 angular.module('panelsApp')
   .controller('MainCtrl', [ 'onlineStatus', '$rootScope', '$scope', 'localFileService', '$timeout', 'firebaseService',
-    'lodash',
-    function (onlineStatus, $rootScope, $scope, localFileService, $timeout, firebaseService, lodash) {
+    'lodash', 'userService',
+    function (onlineStatus, $rootScope, $scope, localFileService, $timeout, firebaseService, lodash, userService) {
     var ctrl = this;
+    ctrl.scriptType = 'comicbook';
     ctrl.editorOptions = {
         lineWrapping : true,
         lineNumbers: false
     };
     ctrl.openPanel = openPanel;
     ctrl.codemirrorLoaded = codemirrorLoaded;
-    ctrl.mine = null;
-    ctrl.init = init;
-    ctrl.typeDelayTimer = null;
     ctrl.addNewFile = addNewFile;
-    ctrl.files = null;
     ctrl.changeFile = changeFile;
     ctrl.syncFileRemote = syncFileRemote;
+    ctrl.init = init;
+    ctrl.userRecord = null;
+    ctrl.mine = null;
+    ctrl.typeDelayTimer = null;
+    ctrl.files = null;
     ctrl.fireBaseAuth = null;
     $scope.mine = null;
     // ctrl.theirs = null,
     // ctrl.dm = new window.diff_match_patch(); // jshint ignore:line
 
     function init () {
-        localFileService.loadFiles();
+        localFileService.loadFiles(ctrl.scriptType);
         var fireService = firebaseService;
         if (onlineStatus.online) {
             fireService.loadUserRecords()
             .then(function () {
+                ctrl.userRecord = userService.getUserRecord();
                 return firebaseService.getAuthorFullFiles();
             })
             .then(function (files) {
-                console.log(files);
                 // if (files.length > 0) {
                 firebaseService.loadRemoteFiles(files);
                 loadCtrlFiles();
@@ -73,7 +75,7 @@ angular.module('panelsApp')
     }
 
     function addNewFile () {
-        localFileService.addNewFile();
+        localFileService.addNewFile(ctrl.scriptType);
         // firebaseService.addNewFileToFiles()
         // .then(function (files) {
         //     loadCtrlFiles();

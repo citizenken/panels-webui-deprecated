@@ -39,7 +39,8 @@ angular
     window.firebase.initializeApp(config);
   })
   .config(function ($mdThemingProvider, $mdIconProvider) {
-    $mdThemingProvider.theme('red');
+    $mdThemingProvider.theme('altTheme').primaryPalette('red');
+    // $mdThemingProvider.setDefaultTheme('altTheme');
     $mdIconProvider.iconSet('navigation', 'images/icons/sets/svg-sprite-navigation.svg', 24);
     $mdIconProvider.iconSet('content', 'images/icons/sets/svg-sprite-content.svg', 24);
   })

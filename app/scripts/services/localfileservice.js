@@ -14,10 +14,10 @@ angular.module('panelsApp')
       currentFile: null,
       files: {},
 
-      loadFiles: function () {
+      loadFiles: function (scriptType) {
         var files = this.getLocalFiles();
         if (lodash.keys(files).length === 0) {
-          var newFile = this.createNewFile();
+          var newFile = this.createNewFile(scriptType);
           files = {};
           files[newFile.id] = newFile;
           localStorage.setItem('panelsFiles', JSON.stringify(files));
@@ -44,7 +44,7 @@ angular.module('panelsApp')
         return files;
       },
 
-      createNewFile: function () {
+      createNewFile: function (scriptType) {
         var id = utilityService.generateRandomId(20),
             file = {
               id: id,
@@ -54,6 +54,7 @@ angular.module('panelsApp')
               author: null,
               content: null,
               synced: false,
+              type: scriptType,
               history: []
             };
 
@@ -96,8 +97,8 @@ angular.module('panelsApp')
         return converted;
       },
 
-      addNewFile: function (profile) {
-        var newFile = this.createNewFile(profile);
+      addNewFile: function (scriptType) {
+        var newFile = this.createNewFile(scriptType);
         this.files[newFile.id] = newFile;
         this.currentFile = newFile;
         this.saveLocalFiles();
