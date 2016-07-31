@@ -22,6 +22,7 @@ angular.module('panelsApp')
     ctrl.addNewFile = addNewFile;
     ctrl.changeFile = changeFile;
     ctrl.syncFileRemote = syncFileRemote;
+    ctrl.signIn = signIn;
     ctrl.init = init;
     ctrl.userRecord = null;
     ctrl.mine = null;
@@ -52,10 +53,10 @@ angular.module('panelsApp')
                 // firebaseService.addLocalFiles();
             })
             .catch(function (error) {
-                // if (error.msg === 'No profile found') {
-                //     // revert to local files
-                //     // loadLocalFiles();
-                // }
+                if (error.msg === 'No profile found') {
+                    // revert to local files
+                    loadCtrlFiles();
+                }
             });
         }
     }
@@ -74,6 +75,13 @@ angular.module('panelsApp')
         _editor.refresh();
     }
 
+    function signIn () {
+        firebaseService.promptGoogleAuth()
+        .then(function () {
+            init();
+        });
+    }
+
     function addNewFile () {
         localFileService.addNewFile(ctrl.scriptType);
         // firebaseService.addNewFileToFiles()
@@ -89,10 +97,15 @@ angular.module('panelsApp')
     }
 
     function syncFileRemote (fileId) {
-        firebaseService.syncLocalFile(localFileService.files[fileId])
-        .then(function () {
+        if (ctrl.mine.synced) {
+            firebaseService.syncLocalFile(localFileService.files[fileId])
+            .then(function () {
+                loadCtrlFiles();
+            });
+        } else {
+            firebaseService.unSyncLocalFile(localFileService.files[fileId]);
             loadCtrlFiles();
-        });
+        }
     }
 
     function changeFile (fileId) {
@@ -101,13 +114,12 @@ angular.module('panelsApp')
         ctrl.files = localFileService.files;
     }
 
-    function handleContentChange (newValue, oldValue) {
+    function handleFileChange (newValue, oldValue) {
         if (ctrl.typeDelayTimer) {
             $timeout.cancel(ctrl.typeDelayTimer);
         }
 
         $rootScope.$emit('scriptContentChange', newValue);
-
 
         ctrl.typeDelayTimer = $timeout(function () {
             if (newValue.id === oldValue.id) {
@@ -146,9 +158,11 @@ angular.module('panelsApp')
         }
     }, function (newValue, oldValue) {
         if (newValue !== null && oldValue !== null) {
-            if (newValue.content !== oldValue.content ||
+            if (newValue.synced !== oldValue.synced) {
+                syncFileRemote(newValue.id);
+            } else if (newValue.content !== oldValue.content ||
                 newValue.title !== oldValue.title) {
-                handleContentChange(ctrl.mine, oldValue);
+                handleFileChange(ctrl.mine, oldValue);
             }
         }
     }, true);

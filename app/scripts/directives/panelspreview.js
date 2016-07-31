@@ -17,7 +17,7 @@ angular.module('panelsApp')
             if (typeof(newValue.content) !== 'undefined' && newValue.content !== null) {
                 element.empty();
                 script.fromBlob(newValue.content);
-                renderer.renderElements();
+                element.append(renderer.renderElements());
             }
         }
 

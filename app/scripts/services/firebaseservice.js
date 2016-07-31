@@ -20,16 +20,13 @@ angular.module('panelsApp')
       rootRef: rootRef,
       users: rootRef.ref('users'),
       files: rootRef.ref('files'),
+      userRecords: null,
       userProfile: null,
       userRecord: null,
       userRef: null,
 
       promptGoogleAuth: function () {
-        this.auth.$signInWithPopup('google').then(function(firebaseUser) {
-          console.log('Signed in as:', firebaseUser);
-        }).catch(function(error) {
-          console.log('Authentication failed:', error);
-        });
+        return this.auth.$signInWithPopup('google');
       },
 
       getAuth: function () {
@@ -193,7 +190,8 @@ angular.module('panelsApp')
               username: profile.email,
               files: null,
               id: profile.uid,
-              photoURL: profile.photoURL
+              photoURL: profile.photoURL,
+              displayName: profile.displayName
             };
 
         users[profile.uid] = newUser;
@@ -231,8 +229,16 @@ angular.module('panelsApp')
         })
         .then(function (rfile) {
           localFileService.files[rfile.id] = rfile;
+          localFileService.saveLocalFiles();
           return self.loadRemoteFiles(localFileService.files);
         });
+      },
+
+      unSyncLocalFile: function (file) {
+        var converted = localFileService.convertFirebaseFile(file);
+        converted.synced = false;
+        localFileService.files[converted.id] = converted;
+        localFileService.saveLocalFiles();
       },
 
       createNewFile: function () {
@@ -277,6 +283,7 @@ angular.module('panelsApp')
                         self.newUserRef(userService.getUserProfile())
                         .then(function(users) {
                           var userRecord = users[profile.uid];
+                          this.userRecords = users;
                           userService.setUserRecord(userRecord);
                           deferred.resolve(userRecord);
                         }).catch(function(error) {
@@ -293,9 +300,9 @@ angular.module('panelsApp')
       }
     };
 
-    service.auth.$onAuthStateChanged(function(firebaseUser) {
-      service.user = firebaseUser;
-    });
+    // service.auth.$onAuthStateChanged(function(firebaseUser) {
+    //   service.user = firebaseUser;
+    // });
 
     return service;
   }]);
