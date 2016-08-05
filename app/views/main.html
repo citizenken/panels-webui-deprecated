@@ -5,17 +5,36 @@
             <md-icon md-svg-icon="navigation:menu"></md-icon>
         </md-button>
         <md-input-container md-no-float class="md-block md-primary" style="width:100%;">
-            <input pu-elastic-input ng-model="main.mine.title" placeholder="Untitled {{ main.mine.type }}" pu-elastic-input-minwidth="171px"></input>
+            <input pu-elastic-input ng-model="main.mine.title" placeholder="Untitled {{ main.mine.type }}"
+            pu-elastic-input-minwidth="200px"></input>
         </md-input-container>
     </div>
 
 </md-toolbar>
-<div layout="row" class="layout-container full-height">
+<div layout="row" class="layout-container full-height" ng-cloak>
     <section flex class="container full-height">
         <ui-codemirror ui-codemirror-opts="main.editorOptions" ng-model="main.mine.content" ui-refresh="true"></ui-codemirror>
     </section>
-    <section flex class="container full-height">
-        <!-- <ui-codemirror ui-codemirror-opts="main.editorOptions" ng-model="main.theirs" ui-refresh="true"></ui-codemirror> -->
+    <section ng-show="main.previewSize" flex class="container" style="background-color:white;word-wrap:break-word;">
         <panels-preview script-type="{{ main.mine.type }}"></panels-preview>
     </section>
+    <div layout="column" layout-align="start center">
+        <md-button class="md-fab md-raised md-primary" aria-label="visibility" ng-click="main.togglePreview()">
+            <md-tooltip md-direction="left">Preview Script</md-tooltip>
+            <md-icon md-svg-icon="action:visibility"></md-icon>
+        </md-button>
+        <md-button class="md-fab md-raised" aria-label="visibility" ng-click="main.togglePreview()" ng-if="main.userRecords">
+            <md-tooltip md-direction="left">Add Collaborator</md-tooltip>
+            <md-icon md-svg-icon="social:person_add"></md-icon>
+        </md-button>
+        <md-input-container ng-if="main.userRecords">
+            <label>User</label>
+            <md-select ng-change="main.addCollaborator()" ng-model="main.collaborators">
+                <md-option ng-repeat="user in main.userRecords track by $index" value="{{user.id}}" ng-disabled="user.id === main.userRecord.id || main.mine.collaborators.indexOf(user.id) !== -1">
+                {{user.username}}
+                </md-option>
+            </md-select>
+        </md-input-container>
+    </div>
 </div>
+<footer>this is a test</footer>

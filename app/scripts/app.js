@@ -43,6 +43,8 @@ angular
     // $mdThemingProvider.setDefaultTheme('altTheme');
     $mdIconProvider.iconSet('navigation', 'images/icons/sets/svg-sprite-navigation.svg', 24);
     $mdIconProvider.iconSet('content', 'images/icons/sets/svg-sprite-content.svg', 24);
+    $mdIconProvider.iconSet('action', 'images/icons/sets/svg-sprite-action.svg', 24);
+    $mdIconProvider.iconSet('social', 'images/icons/sets/svg-sprite-social.svg', 24);
   })
   .config(function ($routeProvider) {
     $routeProvider

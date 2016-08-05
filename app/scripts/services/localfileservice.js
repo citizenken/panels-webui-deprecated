@@ -60,10 +60,7 @@ angular.module('panelsApp')
 
         var profile = userService.getUserRecord();
         if (profile) {
-          file.author = {
-            username: 'foo',
-            id: profile.id
-          };
+          file.author = profile.id;
         }
 
         return file;

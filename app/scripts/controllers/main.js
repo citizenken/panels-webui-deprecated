@@ -24,16 +24,24 @@ angular.module('panelsApp')
     ctrl.syncFileRemote = syncFileRemote;
     ctrl.signIn = signIn;
     ctrl.init = init;
+    ctrl.togglePreview = togglePreview;
+    ctrl.addCollaborator = addCollaborator;
+    ctrl.collaborators = null;
+    ctrl.previewSize = 0;
+    ctrl.fabIsOpen = false;
+    ctrl.userRecords = null;
     ctrl.userRecord = null;
     ctrl.mine = null;
     ctrl.typeDelayTimer = null;
     ctrl.files = null;
     ctrl.fireBaseAuth = null;
+
     $scope.mine = null;
     // ctrl.theirs = null,
     // ctrl.dm = new window.diff_match_patch(); // jshint ignore:line
 
     function init () {
+        ctrl.online = onlineStatus.online;
         localFileService.loadFiles(ctrl.scriptType);
         var fireService = firebaseService;
         if (onlineStatus.online) {
@@ -58,6 +66,12 @@ angular.module('panelsApp')
                     loadCtrlFiles();
                 }
             });
+
+            fireService.getUsers().$loaded().then(function (users) {
+                ctrl.userRecords = users;
+            });
+        } else {
+            loadCtrlFiles();
         }
     }
 
@@ -122,7 +136,7 @@ angular.module('panelsApp')
         $rootScope.$emit('scriptContentChange', newValue);
 
         ctrl.typeDelayTimer = $timeout(function () {
-            if (newValue.id === oldValue.id) {
+            if (oldValue !== null && newValue.id === oldValue.id) {
                 if (!newValue.history) {
                     newValue.history = [];
                 }
@@ -132,16 +146,36 @@ angular.module('panelsApp')
                 }
                 newValue.history.unshift(oldValue);
             }
-            if (!angular.equals(newValue)) {
-                if (lodash.has(newValue, '$id')) {
-                    console.log(newValue);
-                    firebaseService.updateFile(newValue);
-                } else {
-                    localFileService.updateCurrentFileContent(newValue);
-                    ctrl.mine = localFileService.currentFile;
-                }
+
+            if (lodash.has(newValue, '$id')) {
+                console.log(newValue);
+                firebaseService.updateFile(newValue);
+            } else {
+                localFileService.updateCurrentFileContent(newValue);
+                ctrl.mine = localFileService.currentFile;
             }
         }, 500);
+    }
+
+    function togglePreview () {
+        if (ctrl.previewSize) {
+            ctrl.previewSize = 0;
+        } else {
+            ctrl.previewSize = 50;
+            $rootScope.$emit('scriptContentChange', ctrl.mine);
+        }
+    }
+
+    function addCollaborator () {
+        if (ctrl.mine.collaborators.indexOf(ctrl.collaborators) === -1) {
+            firebaseService.addCollaborator(ctrl.collaborators);
+        } else {
+            console.log('already collaborate in file');
+        }
+    }
+
+    function updateOnlineStatus () {
+        ctrl.online = onlineStatus.online;
     }
 
     $scope.$watch(function () {
@@ -157,8 +191,11 @@ angular.module('panelsApp')
             return null;
         }
     }, function (newValue, oldValue) {
-        if (newValue !== null && oldValue !== null) {
-            if (newValue.synced !== oldValue.synced) {
+        if (newValue !== null) {
+            if (oldValue === null) {
+                handleFileChange(ctrl.mine, oldValue);
+            } else if (newValue.synced !== oldValue.synced &&
+                newValue.id === oldValue.id) {
                 syncFileRemote(newValue.id);
             } else if (newValue.content !== oldValue.content ||
                 newValue.title !== oldValue.title) {
@@ -168,6 +205,7 @@ angular.module('panelsApp')
     }, true);
 
     // $rootScope.$on('authStateChange', );
+    $rootScope.$on('onlineStatusChange', updateOnlineStatus);
 
     ctrl.init();
 

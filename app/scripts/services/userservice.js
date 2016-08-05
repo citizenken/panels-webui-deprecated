@@ -18,6 +18,7 @@ angular.module('panelsApp')
     return {
       userProfile: null,
       userRecord: null,
+      users: null,
       setUserProfile: function (profile) {
         this.userProfile = profile;
       },
@@ -26,6 +27,12 @@ angular.module('panelsApp')
           this.setUserProfile(this.generateUserProfile());
         }
         return this.userProfile;
+      },
+      setUserRecords: function (userRecords) {
+        this.users = userRecords;
+      },
+      getUserRecords: function () {
+        return this.userRecord;
       },
       setUserRecord: function (userRecord) {
         this.userRecord = userRecord;

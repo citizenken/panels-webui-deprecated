@@ -9,8 +9,8 @@
  */
 angular.module('panelsApp')
   .factory('firebaseService', ['$window', '$firebaseAuth', '$firebaseObject', '$firebaseArray', '$q', 'lodash',
-    'userService', 'localFileService',
-    function ($window, $firebaseAuth, $firebaseObject, $firebaseArray, $q, lodash, userService, localFileService) {
+    'userService', 'localFileService', 'utilityService',
+    function ($window, $firebaseAuth, $firebaseObject, $firebaseArray, $q, lodash, userService, localFileService, utilityService) {
 
     var auth = $firebaseAuth(),
         rootRef = $window.firebase.database();
@@ -119,7 +119,7 @@ angular.module('panelsApp')
       },
 
       authFileExists: function (file) {
-        var authFileRec = $firebaseObject(this.users.child(file.author.id).child('files/' + file.id)),
+        var authFileRec = $firebaseObject(this.users.child(file.author).child('files/' + file.id)),
             deferred = $q.defer();
 
         authFileRec.$loaded(function (loaded) {
@@ -146,14 +146,14 @@ angular.module('panelsApp')
         } else {
           fileRec = file;
         }
-        fileRec.$loaded(function (fileRec) {
+        fileRec.$loaded(function (fileRecord) {
           lodash.forEach(file, function (value, key) {
             if (value) {
               fileRec[key] = value;
             }
           });
-          fileRec.modifiedOn = Date.now();
-          fileRec.$save()
+          fileRecord.modifiedOn = Date.now();
+          fileRecord.$save()
           .then(function (success) {
             deferred.resolve(success);
           })
@@ -168,7 +168,7 @@ angular.module('panelsApp')
 
       updateAuthFileRef: function (file) {
         var deferred = $q.defer(),
-            authorCopy = $firebaseObject(this.users.child(file.author.id).child('files').child(file.id));
+            authorCopy = $firebaseObject(this.users.child(file.author).child('files').child(file.id));
         authorCopy.$loaded(function (authCopy) {
           lodash.forEach(['id', 'title', 'content', 'modifiedOn'], function (value) {
             if (file[value]) {
@@ -184,8 +184,12 @@ angular.module('panelsApp')
         return deferred.promise;
       },
 
+      getUsers: function () {
+        return $firebaseObject(this.users);
+      },
+
       newUserRef: function (profile) {
-        var users = $firebaseObject(this.users),
+        var users = this.getUsers(),
             newUser = {
               username: profile.email,
               files: null,
@@ -194,11 +198,14 @@ angular.module('panelsApp')
               displayName: profile.displayName
             };
 
-        users[profile.uid] = newUser;
-        return users.$save()
-        .then(function (users) {
-          return $firebaseObject(users).$loaded();
+        return users.$loaded().then(function () {
+          users[profile.uid] = newUser;
+            return users.$save()
+            .then(function (users) {
+              return $firebaseObject(users).$loaded();
+            });
         });
+
       },
 
       addNewFileToFiles: function () {
@@ -214,13 +221,9 @@ angular.module('panelsApp')
         var self = this;
 
         if (file.author === null ||
-          file.author.id === null ||
-          file.author.username === null) {
+          file.id === null) {
           var userRecord = userService.getUserRecord();
-          file.author = {
-            id: userRecord.id,
-            username: userRecord.username
-          };
+          file.author = userRecord.id;
         }
 
         return this.addRemoteFile(file).
@@ -264,6 +267,49 @@ angular.module('panelsApp')
         return localFileService.files;
       },
 
+      addCollaborator: function (collaborator) {
+        var copy = {}, copyId;
+
+        angular.forEach(localFileService.currentFile, function (value, key) {
+          if (key.indexOf('$') === -1 && key !== 'history') {
+            copy[key] = value;
+          }
+        });
+
+        copyId = utilityService.generateRandomId(20);
+        if (!copy.related) {
+          copy.related = {};
+        }
+        copy.related[copy.id] = true;
+        copy.id = copyId;
+        copy.author = collaborator;
+
+        if (!copy.collaborators) {
+          copy.collaborators = [];
+        }
+        copy.collaborators.push(localFileService.currentFile.author);
+
+        if (!localFileService.currentFile.related) {
+          localFileService.currentFile.related = {};
+        }
+        localFileService.currentFile.related[copyId] = true;
+
+
+        if (!localFileService.currentFile.collaborators) {
+          localFileService.currentFile.collaborators = [];
+        }
+        localFileService.currentFile.collaborators.push(collaborator);
+
+        localFileService.currentFile.$save().then(function (saved) {
+          return $firebaseObject(saved).$loaded();
+        });
+
+        this.addRemoteFile(copy).then(function (foo) {
+          console.log(foo);
+        });
+
+      },
+
       loadUserRecords: function () {
         var self = this,
             deferred = $q.defer();
@@ -283,8 +329,7 @@ angular.module('panelsApp')
                         self.newUserRef(userService.getUserProfile())
                         .then(function(users) {
                           var userRecord = users[profile.uid];
-                          this.userRecords = users;
-                          userService.setUserRecord(userRecord);
+                          userService.setUserRecords(users);
                           deferred.resolve(userRecord);
                         }).catch(function(error) {
                           console.log('Error saving record');
