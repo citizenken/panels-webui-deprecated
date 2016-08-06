@@ -167,8 +167,13 @@ angular.module('panelsApp')
     }
 
     function addCollaborator () {
-        if (ctrl.mine.collaborators.indexOf(ctrl.collaborators) === -1) {
-            firebaseService.addCollaborator(ctrl.collaborators);
+        if (!ctrl.mine.collaborators || ctrl.mine.collaborators.indexOf(ctrl.collaborators) === -1) {
+            firebaseService.addCollaborator(ctrl.collaborators)
+            .then(function (copy) {
+                console.log(copy);
+                console.log(localFileService.currentFile);
+                loadCtrlFiles();
+            });
         } else {
             console.log('already collaborate in file');
         }

@@ -23,6 +23,10 @@
             <md-tooltip md-direction="left">Preview Script</md-tooltip>
             <md-icon md-svg-icon="action:visibility"></md-icon>
         </md-button>
+        <md-button class="md-fab md-raised md-primary" aria-label="visibility" ng-repeat="file in main.mine.related">
+            <md-tooltip md-direction="left">{{ file }}</md-tooltip>
+            <md-icon md-svg-icon="action:visibility"></md-icon>
+        </md-button>
         <md-button class="md-fab md-raised" aria-label="visibility" ng-click="main.togglePreview()" ng-if="main.userRecords">
             <md-tooltip md-direction="left">Add Collaborator</md-tooltip>
             <md-icon md-svg-icon="social:person_add"></md-icon>
@@ -30,7 +34,7 @@
         <md-input-container ng-if="main.userRecords">
             <label>User</label>
             <md-select ng-change="main.addCollaborator()" ng-model="main.collaborators">
-                <md-option ng-repeat="user in main.userRecords track by $index" value="{{user.id}}" ng-disabled="user.id === main.userRecord.id || main.mine.collaborators.indexOf(user.id) !== -1">
+                <md-option ng-repeat="user in main.userRecords track by $index" value="{{user.id}}" ng-disabled="user.id === main.userRecord.id || (main.mine.collaborators && main.mine.collaborators.indexOf(user.id) !== -1)">
                 {{user.username}}
                 </md-option>
             </md-select>
