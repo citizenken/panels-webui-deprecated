@@ -57,8 +57,7 @@ angular.module('panelsApp')
               type: scriptType,
               history: [],
               collaborators: [],
-              children: [],
-              parent: null
+              related: []
             };
 
         var profile = userService.getUserRecord();

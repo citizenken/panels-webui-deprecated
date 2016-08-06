@@ -6,7 +6,8 @@
         <md-content layout-padding>
             <md-list>
                 <md-list-item class="md-3-line" ng-if="main.userRecord">
-                    <img ng-src="{{ main.userRecord.photoURL }}" class="md-avatar" alt="{{ main.userRecord.username }}">
+                    <img ng-if="main.userRecord.photoURL" ng-src="{{ main.userRecord.photoURL }}" class="md-avatar" alt="{{ main.userRecord.username }}">
+                    <!-- <md-button ng-if="!main.userRecord.photoURL" class="md-raised md-fab">{{ main.userRecord.username[0] }}</md-button> -->
                     <div class="md-list-item-text">
                         <h3>{{ main.userRecord.displayName }}</h3>
                         <p>{{ main.userRecord.username }}</p>

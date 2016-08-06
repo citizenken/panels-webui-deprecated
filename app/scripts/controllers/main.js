@@ -32,6 +32,8 @@ angular.module('panelsApp')
     ctrl.userRecords = null;
     ctrl.userRecord = null;
     ctrl.mine = null;
+    ctrl.related = null;
+    ctrl.collaborators = null;
     ctrl.typeDelayTimer = null;
     ctrl.files = null;
     ctrl.fireBaseAuth = null;
@@ -78,6 +80,10 @@ angular.module('panelsApp')
     function loadCtrlFiles () {
         ctrl.mine = localFileService.currentFile;
         ctrl.files = localFileService.files;
+
+        if (lodash.has(ctrl.mine, '$id')) {
+            loadRelatedRecords(ctrl.mine);
+        }
     }
 
     function openPanel () {
@@ -126,6 +132,21 @@ angular.module('panelsApp')
         localFileService.changeCurrentFile(fileId);
         ctrl.mine = localFileService.currentFile;
         ctrl.files = localFileService.files;
+
+        if (lodash.has(ctrl.mine, '$id')) {
+            loadRelatedRecords(ctrl.mine);
+        }
+    }
+
+    function loadRelatedRecords (file) {
+        firebaseService.loadRelated(file)
+        .then(function (related) {
+            ctrl.related = related;
+            return firebaseService.loadCollaborators(ctrl.mine);
+        })
+        .then(function (collaborators) {
+            ctrl.collaborators = collaborators;
+        });
     }
 
     function handleFileChange (newValue, oldValue) {

@@ -1,0 +1,8 @@
+.md-avatar-button {
+  padding: 0;
+}
+
+.md-avatar-button img {
+  width: 100%;
+  margin-top: -5px;
+}

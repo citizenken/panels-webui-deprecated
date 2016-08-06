@@ -76,6 +76,16 @@ html, body {
 .fail {
   color: red;
 }
+
+.md-avatar-button {
+  padding: 0;
+}
+
+.md-avatar-button img {
+  width: 105%;
+}
+
+
 /* Responsive: Portrait tablets and up */
 /*@media screen and (min-width: 768px) {
   .container {

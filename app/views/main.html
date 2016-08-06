@@ -23,10 +23,13 @@
             <md-tooltip md-direction="left">Preview Script</md-tooltip>
             <md-icon md-svg-icon="action:visibility"></md-icon>
         </md-button>
-        <md-button class="md-fab md-raised md-primary" aria-label="visibility" ng-repeat="file in main.mine.related">
-            <md-tooltip md-direction="left">{{ file }}</md-tooltip>
-            <md-icon md-svg-icon="action:visibility"></md-icon>
+
+        <md-button class="md-fab md-raised md-primary md-avatar-button" aria-label="visibility" ng-repeat="file in main.related">
+            <md-tooltip md-direction="left">{{ main.collaborators[file.author].username }}'s copy "{{ file.title }}"</md-tooltip>
+            <img ng-if="main.collaborators[file.author].photoURL" ng-src="{{ main.collaborators[file.author].photoURL }}" class="md-avatar" alt="{{ main.collaborators[file.author].username }}">
+            <span ng-if="!main.collaborators[file.author].photoURL">{{ main.collaborators[file.author].username[0] | uppercase }}</span>
         </md-button>
+
         <md-button class="md-fab md-raised" aria-label="visibility" ng-click="main.togglePreview()" ng-if="main.userRecords">
             <md-tooltip md-direction="left">Add Collaborator</md-tooltip>
             <md-icon md-svg-icon="social:person_add"></md-icon>

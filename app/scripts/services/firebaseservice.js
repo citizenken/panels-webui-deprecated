@@ -10,7 +10,8 @@
 angular.module('panelsApp')
   .factory('firebaseService', ['$window', '$firebaseAuth', '$firebaseObject', '$firebaseArray', '$q', 'lodash',
     'userService', 'localFileService', 'utilityService',
-    function ($window, $firebaseAuth, $firebaseObject, $firebaseArray, $q, lodash, userService, localFileService, utilityService) {
+    function ($window, $firebaseAuth, $firebaseObject, $firebaseArray, $q,
+      lodash, userService, localFileService, utilityService) {
 
     var auth = $firebaseAuth(),
         rootRef = $window.firebase.database();
@@ -313,6 +314,26 @@ angular.module('panelsApp')
           return self.addRemoteFile(copy);
         });
 
+      },
+
+      loadRelated: function (file) {
+        var self = this,
+            files = {};
+        lodash.forEach(file.related, function (value, key) {
+          files[value] = $firebaseObject(self.files.child(value)).$loaded();
+        });
+
+        return $q.all(files);
+      },
+
+      loadCollaborators: function (file) {
+        var self = this,
+            collaborators = {};
+        lodash.forEach(file.collaborators, function (value, key) {
+          collaborators[value] = $firebaseObject(self.users.child(value)).$loaded();
+        });
+
+        return $q.all(collaborators);
       },
 
       loadUserRecords: function () {
