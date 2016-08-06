@@ -26,6 +26,7 @@ angular.module('panelsApp')
     ctrl.init = init;
     ctrl.togglePreview = togglePreview;
     ctrl.addCollaborator = addCollaborator;
+    ctrl.toggleDiffRelated = toggleDiffRelated;
     ctrl.collaborators = null;
     ctrl.previewSize = 0;
     ctrl.fabIsOpen = false;
@@ -179,6 +180,7 @@ angular.module('panelsApp')
     }
 
     function togglePreview () {
+        ctrl.theirs = null;
         if (ctrl.previewSize) {
             ctrl.previewSize = 0;
         } else {
@@ -202,6 +204,11 @@ angular.module('panelsApp')
 
     function updateOnlineStatus () {
         ctrl.online = onlineStatus.online;
+    }
+
+    function toggleDiffRelated (fileId) {
+        ctrl.previewSize = null;
+        ctrl.theirs = ctrl.related[fileId];
     }
 
     $scope.$watch(function () {
