@@ -2,37 +2,6 @@
   "name": "panels",
   "private": true,
   "devDependencies": {
-    "autoprefixer-core": "*",
-    "grunt": "*",
-    "grunt-angular-templates": "*",
-    "grunt-concurrent": "*",
-    "grunt-contrib-clean": "*",
-    "grunt-contrib-concat": "*",
-    "grunt-contrib-connect": "*",
-    "grunt-contrib-copy": "*",
-    "grunt-contrib-cssmin": "*",
-    "grunt-contrib-htmlmin": "*",
-    "grunt-contrib-imagemin": "*",
-    "grunt-contrib-jshint": "*",
-    "grunt-contrib-uglify": "*",
-    "grunt-contrib-watch": "*",
-    "grunt-filerev": "*",
-    "grunt-google-cdn": "*",
-    "grunt-jscs": "*",
-    "grunt-newer": "*",
-    "grunt-ng-annotate": "*",
-    "grunt-postcss": "*",
-    "grunt-svgmin": "*",
-    "grunt-usemin": "*",
-    "grunt-wiredep": "*",
-    "jit-grunt": "*",
-    "time-grunt": "*",
-    "jshint-stylish": "*"
-  },
-  "engines": {
-    "node": ">=0.10.0"
-  },
-  "dependencies": {
     "autoprefixer-core": "^6.0.1",
     "grunt": "^1.0.1",
     "grunt-angular-templates": "^1.1.0",
@@ -54,5 +23,9 @@
     "jit-grunt": "^0.10.0",
     "jshint-stylish": "^2.2.0",
     "time-grunt": "^1.4.0"
-  }
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+
 }
