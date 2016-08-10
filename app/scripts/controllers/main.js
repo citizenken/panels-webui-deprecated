@@ -9,8 +9,8 @@
  */
 angular.module('panelsApp')
   .controller('MainCtrl', [ 'onlineStatus', '$rootScope', '$scope', 'localFileService', '$timeout', 'firebaseService',
-    'lodash', 'userService',
-    function (onlineStatus, $rootScope, $scope, localFileService, $timeout, firebaseService, lodash, userService) {
+    'lodash', 'userService', 'diffservice',
+    function (onlineStatus, $rootScope, $scope, localFileService, $timeout, firebaseService, lodash, userService, diffservice) { // jshint ignore:line
     var ctrl = this;
     ctrl.scriptType = 'comicbook';
     ctrl.editorOptions = {
@@ -156,6 +156,7 @@ angular.module('panelsApp')
         }
 
         $rootScope.$emit('scriptContentChange', newValue);
+        $rootScope.$emit('renderDiff', newValue, ctrl.theirs);
 
         ctrl.typeDelayTimer = $timeout(function () {
             if (oldValue !== null && newValue.id === oldValue.id) {
@@ -170,7 +171,6 @@ angular.module('panelsApp')
             }
 
             if (lodash.has(newValue, '$id')) {
-                console.log(newValue);
                 firebaseService.updateFile(newValue);
             } else {
                 localFileService.updateCurrentFileContent(newValue);
@@ -211,6 +211,10 @@ angular.module('panelsApp')
         ctrl.theirs = ctrl.related[fileId];
     }
 
+    function applyPatch (event, patch) {
+        ctrl.mine.content = diffservice.applyPatch(patch, ctrl.mine.content)[0];
+    }
+
     $scope.$watch(function () {
         if (ctrl.mine) {
             var props = {};
@@ -237,7 +241,31 @@ angular.module('panelsApp')
         }
     }, true);
 
+    $scope.$watch(function () {
+        if (ctrl.theirs) {
+            var props = {};
+            lodash.forEach(ctrl.theirs, function (value, key) {
+                if (key.indexOf('$') === -1 && key !== 'history') {
+                    props[key] = value;
+                }
+            });
+            return props;
+        } else {
+            return null;
+        }
+    }, function (newValue, oldValue) {
+        if (newValue !== null) {
+            if (oldValue === null) {
+                $rootScope.$emit('renderDiff', ctrl.mine, ctrl.theirs);
+            } else if (newValue.content !== oldValue.content ||
+                newValue.title !== oldValue.title) {
+                $rootScope.$emit('renderDiff', ctrl.mine, ctrl.theirs);
+            }
+        }
+    }, true);
+
     // $rootScope.$on('authStateChange', );
+    $rootScope.$on('applyPatch', applyPatch);
     $rootScope.$on('onlineStatusChange', updateOnlineStatus);
 
     ctrl.init();

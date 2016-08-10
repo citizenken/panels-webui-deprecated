@@ -85,6 +85,17 @@ html, body {
   width: 105%;
 }
 
+.diff-view *:hover {
+  cursor: pointer;
+}
+
+mine {
+  background-color: orange;
+}
+
+theirs {
+  background-color: dodgerblue;
+}
 
 /* Responsive: Portrait tablets and up */
 /*@media screen and (min-width: 768px) {
