@@ -20,7 +20,6 @@ angular
     'ui.layout',
     'ngLodash',
     'firebase',
-    'LocalStorageModule',
     'puElasticInput'
   ])
   .constant('appConfig', {
