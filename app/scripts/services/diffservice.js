@@ -30,10 +30,10 @@ angular.module('panelsApp')
             .replace(patternGt, '&gt;').replace(patternPara, '\n<br>');
         switch (op) {
           case diffInsert:
-            html[x] = '<mine>' + text + '</mine>';
+            html[x] = '<ins>' + text + '</ins>';
             break;
           case diffDelete:
-            html[x] = '<theirs>' + text + '</theirs>';
+            html[x] = '<del>' + text + '</del>';
             break;
           case diffEqual:
             if (patchNum !== undefined) {

@@ -19,7 +19,7 @@ angular.module('panelsApp')
         function renderDiff (event, mine, theirs) {
           if (mine && theirs) {
             $element.empty();
-            var diffs = diffservice.diffEfficiency(mine.content, theirs.content);
+            var diffs = diffservice.diffEfficiency(theirs.content, mine.content);
             if (diffs.length === 1 && diffs[0][0] === 0) {
               $element.append(angular.element('<span>' + theirs.content + '</span>'));
             } else {

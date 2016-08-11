@@ -89,12 +89,12 @@ html, body {
   cursor: pointer;
 }
 
-mine {
-  background-color: orange;
+del {
+  background: #ffe6e6;
 }
 
-theirs {
-  background-color: dodgerblue;
+ins {
+  background: #e6ffe6;
 }
 
 /* Responsive: Portrait tablets and up */

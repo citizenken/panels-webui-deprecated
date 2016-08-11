@@ -292,9 +292,11 @@ module.exports = function (grunt) {
         }
       }
     },
-    // concat: {
-    //   dist: {}
-    // },
+     /*concat: {
+	dist: {       
+	  nonull: true
+	}
+     },*/
 
     imagemin: {
       dist: {
@@ -471,7 +473,6 @@ module.exports = function (grunt) {
     'copy:dist',
     // 'cdnify',
     'cssmin',
-    'uglify',
     'filerev',
     'usemin',
     'htmlmin'

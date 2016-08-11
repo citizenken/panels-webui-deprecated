@@ -20,8 +20,8 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       // bower:js
-      'bower_components/jquery/dist/jquery.js',
       'bower_components/angular/angular.js',
+      'bower_components/jquery/dist/jquery.js',
       'bower_components/bootstrap/dist/js/bootstrap.js',
       'bower_components/angular-animate/angular-animate.js',
       'bower_components/angular-cookies/angular-cookies.js',
@@ -38,12 +38,11 @@ module.exports = function(config) {
       'bower_components/angularfire/dist/angularfire.js',
       'bower_components/angular-ui-layout/src/ui-layout.js',
       'bower_components/lodash/lodash.js',
-      'bower_components/panels/dist/panels.js',
+      'bower_components/panels-lib/dist/panels.js',
       'bower_components/ng-lodash/build/ng-lodash.js',
       'bower_components/Typo.js/typo/typo.js',
       'bower_components/google-diff-match-patch/diff_match_patch.js',
-      'bower_components/angular-local-storage/dist/angular-local-storage.js',
-      'bower_components/angular-elastic-input/dist/angular-elastic-input.min.js',
+      'bower_components/angular-elastic-input/dist/angular-elastic-input.js',
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
       'app/scripts/**/*.js',
