@@ -42,7 +42,7 @@ module.exports = function(config) {
       'bower_components/ng-lodash/build/ng-lodash.js',
       'bower_components/Typo.js/typo/typo.js',
       'bower_components/google-diff-match-patch/diff_match_patch.js',
-      'bower_components/angular-elastic-input/dist/angular-elastic-input.js',
+      'bower_components/angular-elastic-input/dist/angular-elastic-input.min.js',
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
       'app/scripts/**/*.js',

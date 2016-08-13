@@ -44,7 +44,7 @@
                         <h3 type="md-button">{{ file.title || 'Untitled ' + file.type }}</h3>
                         <p ng-if="file.id == main.mine.id">Current file</p>
                     </div>
-                    <md-switch ng-model="file.synced" class="md-secondary"></md-switch>
+                    <md-switch ng-disabled="!main.online" ng-model="file.synced" class="md-secondary"></md-switch>
                 </md-list-item>
             </md-list>
         </md-content>
