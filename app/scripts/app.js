@@ -20,7 +20,8 @@ angular
     'ui.layout',
     'ngLodash',
     'firebase',
-    'puElasticInput'
+    'puElasticInput',
+    'ngFileSaver'
   ])
   .constant('appConfig', {
     chromeApp: ((window.chrome && window.chrome.app && window.chrome.app.runtime) !== undefined)

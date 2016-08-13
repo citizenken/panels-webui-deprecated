@@ -9,8 +9,8 @@
  */
 angular.module('panelsApp')
   .controller('MainCtrl', [ 'onlineStatus', '$rootScope', '$scope', 'localFileService', '$timeout', 'firebaseService',
-    'lodash', 'userService', 'diffservice',
-    function (onlineStatus, $rootScope, $scope, localFileService, $timeout, firebaseService, lodash, userService, diffservice) { // jshint ignore:line
+    'lodash', 'userService', 'diffservice', 'FileSaver', 'Blob',
+    function (onlineStatus, $rootScope, $scope, localFileService, $timeout, firebaseService, lodash, userService, diffservice, FileSaver, Blob) { // jshint ignore:line
     var ctrl = this;
     ctrl.scriptType = 'comicbook';
     ctrl.editorOptions = {
@@ -27,6 +27,7 @@ angular.module('panelsApp')
     ctrl.togglePreview = togglePreview;
     ctrl.addCollaborator = addCollaborator;
     ctrl.toggleDiffRelated = toggleDiffRelated;
+    ctrl.downloadFile = downloadFile;
     ctrl.collaborators = null;
     ctrl.previewSize = 0;
     ctrl.fabIsOpen = false;
@@ -137,6 +138,11 @@ angular.module('panelsApp')
         if (lodash.has(ctrl.mine, '$id')) {
             loadRelatedRecords(ctrl.mine);
         }
+    }
+
+    function downloadFile () {
+      var data = new Blob([ctrl.mine.content], { type: 'text/plain;charset=utf-8' });
+      FileSaver.saveAs(data, ctrl.mine.title + '.txt'); 
     }
 
     function loadRelatedRecords (file) {

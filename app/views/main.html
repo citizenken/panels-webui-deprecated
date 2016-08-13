@@ -13,7 +13,8 @@
 </md-toolbar>
 <div layout="row" class="layout-container full-height" ng-cloak>
     <section flex class="container full-height">
-        <ui-codemirror ui-codemirror-opts="main.editorOptions" ng-model="main.mine.content" ui-refresh="true"></ui-codemirror>
+        <md-button class="md-primary" aria-label="download" ng-click="main.downloadFile()">Download</md-button>        
+	<ui-codemirror ui-codemirror-opts="main.editorOptions" ng-model="main.mine.content" ui-refresh="true"></ui-codemirror>
     </section>
     <section ng-show="main.previewSize" flex class="container" style="background-color:white;word-wrap:break-word;">
         <panels-preview script-type="{{ main.mine.type }}"></panels-preview>
