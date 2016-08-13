@@ -14,16 +14,8 @@ angular.module('panelsApp')
       currentFile: null,
       files: {},
 
-      loadFiles: function (scriptType) {
+      loadFiles: function () {
         var files = this.getLocalFiles();
-        if (lodash.keys(files).length === 0) {
-          var newFile = this.createNewFile(scriptType);
-          files = {};
-          files[newFile.id] = newFile;
-          localStorage.setItem('panelsFiles', JSON.stringify(files));
-        }
-
-
         angular.forEach(files, function (value, key) {
           this.files[key] = value;
         }, this);
@@ -32,6 +24,13 @@ angular.module('panelsApp')
         this.currentFile = lastModified;
 
         return this.files;
+      },
+
+      createNewLocalFile: function (scriptType) {
+        var newFile = this.createNewFile(scriptType),
+            files = {};
+        files[newFile.id] = newFile;
+        localStorage.setItem('panelsFiles', JSON.stringify(files));
       },
 
       getLocalFiles: function () {

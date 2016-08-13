@@ -29,17 +29,17 @@
             <md-icon md-svg-icon="action:visibility"></md-icon>
         </md-button>
 
-        <md-button class="md-fab md-primary md-avatar-button" aria-label="visibility" ng-repeat="file in main.related" ng-click="main.toggleDiffRelated(file.id)">
+        <md-button ng-if="main.mine.synced" class="md-fab md-primary md-avatar-button" aria-label="visibility" ng-repeat="file in main.related" ng-click="main.toggleDiffRelated(file.id)">
             <md-tooltip md-direction="left">{{ main.collaborators[file.author].displayName }}'s copy "{{ file.title }}"</md-tooltip>
             <img ng-if="main.collaborators[file.author].photoURL" ng-src="{{ main.collaborators[file.author].photoURL }}" class="md-avatar" alt="{{ main.collaborators[file.author].username }}">
             <span ng-if="!main.collaborators[file.author].photoURL">{{ main.collaborators[file.author].displayName[0] | uppercase }}</span>
         </md-button>
 
-        <md-button class="md-fab" aria-label="visibility" ng-click="main.togglePreview()" ng-if="main.userRecords">
+        <md-button class="md-fab" aria-label="visibility" ng-click="main.togglePreview()" ng-if="main.userRecords && main.mine.synced">
             <md-tooltip md-direction="left">Add Collaborator</md-tooltip>
             <md-icon md-svg-icon="social:person_add"></md-icon>
         </md-button>
-        <md-input-container ng-if="main.userRecords">
+        <md-input-container ng-if="main.userRecords && main.mine.synced">
             <label>User</label>
             <md-select ng-change="main.addCollaborator()" ng-model="main.collaborators">
                 <md-option ng-repeat="user in main.userRecords track by $index" value="{{user.id}}" ng-disabled="user.id === main.userRecord.id || (main.mine.collaborators && main.mine.collaborators.indexOf(user.id) !== -1)">

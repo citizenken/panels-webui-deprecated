@@ -14,7 +14,7 @@
     "angular-ui-codemirror": "^0.3.0",
     "angularfire": "^2.0.1",
     "angular-ui-layout": "^1.4.2",
-    "panels-lib": "https://github.com/citizenken/panels-lib.git#master",
+    "panels-lib": "https://github.com/citizenken/panels-lib.git#0.1.1",
     "ng-lodash": "^0.5.0",
     "Typo.js": "*",
     "google-diff-match-patch": "^0.1.0",

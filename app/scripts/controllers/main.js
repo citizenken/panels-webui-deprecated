@@ -39,6 +39,7 @@ angular.module('panelsApp')
     ctrl.typeDelayTimer = null;
     ctrl.files = null;
     ctrl.fireBaseAuth = null;
+    ctrl.online = false;
 
     $scope.mine = null;
     // ctrl.theirs = null,
@@ -46,7 +47,7 @@ angular.module('panelsApp')
 
     function init () {
         ctrl.online = onlineStatus.online;
-        localFileService.loadFiles(ctrl.scriptType);
+        localFileService.loadFiles();
         var fireService = firebaseService;
         if (onlineStatus.online) {
             fireService.loadUserRecords()
@@ -67,7 +68,7 @@ angular.module('panelsApp')
             .catch(function (error) {
                 if (error.msg === 'No profile found') {
                     // revert to local files
-                    loadCtrlFiles();
+                    initLocalFiles();
                 }
             });
 
@@ -75,8 +76,16 @@ angular.module('panelsApp')
                 ctrl.userRecords = users;
             });
         } else {
-            loadCtrlFiles();
+            initLocalFiles();
         }
+    }
+
+    function initLocalFiles () {
+        if (lodash.keys(localFileService.files).length === 0) {
+           localFileService.createNewLocalFile(ctrl.scriptType);
+            localFileService.loadFiles();
+        }
+        loadCtrlFiles();
     }
 
     function loadCtrlFiles () {
