@@ -41,11 +41,32 @@
                 </md-list-item>
                 <md-list-item class="md-3-line" ng-repeat="file in main.files track by $index" ng-click="main.changeFile(file.id)">
                     <div class="md-list-item-text">
-                        <h3 type="md-button">{{ file.title || 'Untitled ' + file.type }}</h3>
+                        <h3>{{ file.title || 'Untitled ' + file.type }}</h3>
+                        <md-button class="md-icon-button">
+                            <md-icon md-svg-icon="file:file_download"></md-icon>
+                        </md-button>
+                        <md-menu>
+                            <md-button ng-click="$mdOpenMenu($event)" class="md-icon-button">
+                                <md-icon md-svg-icon="social:person_add"></md-icon>
+                            </md-button>
+                            <md-menu-content>
+                                <md-menu-item>
+                                    <md-input-container ng-if="main.userRecords && main.mine.synced">
+                                        <label>User</label>
+                                        <md-select ng-change="main.addCollaborator()" ng-model="main.collaborators">
+                                            <md-option ng-repeat="user in main.userRecords track by $index" value="{{user.id}}" ng-disabled="user.id === main.userRecord.id || (main.mine.collaborators && main.mine.collaborators.indexOf(user.id) !== -1)">
+                                            {{user.username}}
+                                            </md-option>
+                                        </md-select>
+                                    </md-input-container>
+                                </md-menu-item>
+                            </md-menu-content>
+                        </md-menu>
                         <p ng-if="file.id == main.mine.id">Current file</p>
                     </div>
-                    <md-switch ng-disabled="!main.online" ng-model="file.synced" class="md-secondary"></md-switch>
-                    <md-button class="md-primary">Download</md-button>
+                    </br>
+                    <!-- <md-checkbox ng-model="file.synced" aria-label="online"></md-checkbox> -->
+                    <md-switch ng-disabled="!main.online" ng-model="file.synced"></md-switch>
                 </md-list-item>
             </md-list>
         </md-content>

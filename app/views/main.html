@@ -13,8 +13,7 @@
 </md-toolbar>
 <div layout="row" class="layout-container full-height" ng-cloak>
     <section flex class="container full-height">
-        <md-button class="md-primary" aria-label="download" ng-click="main.downloadFile()">Download</md-button>        
-	<ui-codemirror ui-codemirror-opts="main.editorOptions" ng-model="main.mine.content" ui-refresh="true"></ui-codemirror>
+    	<ui-codemirror ui-codemirror-opts="main.editorOptions" ng-model="main.mine.content" ui-refresh="true"></ui-codemirror>
     </section>
     <section ng-show="main.previewSize" flex class="container" style="background-color:white;word-wrap:break-word;">
         <panels-preview script-type="{{ main.mine.type }}"></panels-preview>
@@ -35,18 +34,18 @@
             <span ng-if="!main.collaborators[file.author].photoURL">{{ main.collaborators[file.author].displayName[0] | uppercase }}</span>
         </md-button>
 
-        <md-button class="md-fab" aria-label="visibility" ng-click="main.togglePreview()" ng-if="main.userRecords && main.mine.synced">
+<!--         <md-button class="md-fab" aria-label="visibility" ng-click="main.togglePreview()" ng-if="main.userRecords && main.mine.synced">
             <md-tooltip md-direction="left">Add Collaborator</md-tooltip>
             <md-icon md-svg-icon="social:person_add"></md-icon>
-        </md-button>
-        <md-input-container ng-if="main.userRecords && main.mine.synced">
+        </md-button> -->
+        <!-- <md-input-container ng-if="main.userRecords && main.mine.synced">
             <label>User</label>
             <md-select ng-change="main.addCollaborator()" ng-model="main.collaborators">
                 <md-option ng-repeat="user in main.userRecords track by $index" value="{{user.id}}" ng-disabled="user.id === main.userRecord.id || (main.mine.collaborators && main.mine.collaborators.indexOf(user.id) !== -1)">
                 {{user.username}}
                 </md-option>
             </md-select>
-        </md-input-container>
+        </md-input-container> -->
     </div>
 </div>
 <footer>this is a test</footer>

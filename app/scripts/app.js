@@ -45,6 +45,7 @@ angular
     $mdIconProvider.iconSet('content', 'images/icons/sets/svg-sprite-content.svg', 24);
     $mdIconProvider.iconSet('action', 'images/icons/sets/svg-sprite-action.svg', 24);
     $mdIconProvider.iconSet('social', 'images/icons/sets/svg-sprite-social.svg', 24);
+    $mdIconProvider.iconSet('file', 'images/icons/sets/svg-sprite-file.svg', 24);
   })
   .config(function ($routeProvider) {
     $routeProvider
