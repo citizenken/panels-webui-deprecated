@@ -45,23 +45,9 @@
                         <md-button class="md-icon-button">
                             <md-icon md-svg-icon="file:file_download"></md-icon>
                         </md-button>
-                        <md-menu>
-                            <md-button ng-click="$mdOpenMenu($event)" class="md-icon-button">
-                                <md-icon md-svg-icon="social:person_add"></md-icon>
-                            </md-button>
-                            <md-menu-content>
-                                <md-menu-item>
-                                    <md-input-container ng-if="main.userRecords && main.mine.synced">
-                                        <label>User</label>
-                                        <md-select ng-change="main.addCollaborator()" ng-model="main.collaborators">
-                                            <md-option ng-repeat="user in main.userRecords track by $index" value="{{user.id}}" ng-disabled="user.id === main.userRecord.id || (main.mine.collaborators && main.mine.collaborators.indexOf(user.id) !== -1)">
-                                            {{user.username}}
-                                            </md-option>
-                                        </md-select>
-                                    </md-input-container>
-                                </md-menu-item>
-                            </md-menu-content>
-                        </md-menu>
+                        <md-button ng-click="sidebar.showUserDialog($event)" class="md-icon-button">
+                            <md-icon md-svg-icon="social:person_add"></md-icon>
+                        </md-button>
                         <p ng-if="file.id == main.mine.id">Current file</p>
                     </div>
                     </br>

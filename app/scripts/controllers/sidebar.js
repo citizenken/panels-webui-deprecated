@@ -8,10 +8,12 @@
  * Controller of the panelsApp
  */
 angular.module('panelsApp')
-  .controller('SidebarCtrl', [ 'onlineStatus', '$rootScope', '$scope', function (onlineStatus, $rootScope, $scope) {
+  .controller('SidebarCtrl', [ 'onlineStatus', '$rootScope', '$scope', '$mdDialog', 'userService',
+    function (onlineStatus, $rootScope, $scope, $mdDialog, userService) {
     var ctrl = this;
     ctrl.init = init;
     ctrl.isOpen = false;
+    ctrl.showUserDialog = showUserDialog;
     ctrl.settings = {
         online: null
     };
@@ -28,6 +30,29 @@ angular.module('panelsApp')
     function openPanel () {
         ctrl.isOpen = !ctrl.isOpen;
     }
+
+    function showUserDialog (ev) {
+        console.log(userService.users);
+        ctrl.dialog = $mdDialog.show({
+            templateUrl: 'views/user-dialog.html',
+            parent: angular.element(document.body),
+            targetEvent: ev,
+            clickOutsideToClose:true,
+            locals: {
+                users: userService.users
+            }
+        })
+        .then(function(answer) {
+          $scope.status = 'You said the information was "' + answer + '".';
+        }, function() {
+          $scope.status = 'You cancelled the dialog.';
+        });
+    }
+
+    function closeDialog () {
+        ctrl.dialog.hide();
+    }
+
 
     $rootScope.$on('onlineStatusChange', updateOnlineStatus);
     $rootScope.$on('openPanel', openPanel);

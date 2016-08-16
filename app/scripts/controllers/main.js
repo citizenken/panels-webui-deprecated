@@ -74,6 +74,7 @@ angular.module('panelsApp')
 
             fireService.getUsers().$loaded().then(function (users) {
                 ctrl.userRecords = users;
+                userService.setUserRecords(users);
             });
         } else {
             initLocalFiles();
@@ -151,7 +152,7 @@ angular.module('panelsApp')
 
     function downloadFile () {
       var data = new Blob([ctrl.mine.content], { type: 'text/plain;charset=utf-8' });
-      FileSaver.saveAs(data, ctrl.mine.title + '.txt'); 
+      FileSaver.saveAs(data, ctrl.mine.title + '.txt');
     }
 
     function loadRelatedRecords (file) {
