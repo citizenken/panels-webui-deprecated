@@ -38,7 +38,7 @@ module.exports = function(config) {
       'bower_components/angularfire/dist/angularfire.js',
       'bower_components/angular-ui-layout/src/ui-layout.js',
       'bower_components/lodash/lodash.js',
-      'bower_components/panels-lib/dist/panels.js',
+      'bower_components/panels-lib/dist/panels-lib.js',
       'bower_components/ng-lodash/build/ng-lodash.js',
       'bower_components/Typo.js/typo/typo.js',
       'bower_components/google-diff-match-patch/diff_match_patch.js',

@@ -32,22 +32,35 @@ angular.module('panelsApp')
     }
 
     function showUserDialog (ev) {
-        console.log(userService.users);
-        ctrl.dialog = $mdDialog.show({
+        var dialogObj = $mdDialog.show({
+            controller: DialogCtrl,
+            controllerAs: 'ctrl',
             templateUrl: 'views/user-dialog.html',
             parent: angular.element(document.body),
             targetEvent: ev,
-            clickOutsideToClose:true,
-            locals: {
-                users: userService.users
-            }
+            clickOutsideToClose: true,
+            fullscreen: true
         })
         .then(function(answer) {
           $scope.status = 'You said the information was "' + answer + '".';
         }, function() {
           $scope.status = 'You cancelled the dialog.';
         });
+        function DialogCtrl(userService, $mdDialog, lodash, $q) {
+            var ctrl = this;
+            ctrl.selectedUsers = [];
+            ctrl.users = userService.users;
+            ctrl.closeDialog = function () {
+                $mdDialog.hide()
+            }
+
+            ctrl.userSearch = function (query) {
+               var results = query ? lodash.filter(ctrl.users, {'username': criteria}): [];
+               return results;                
+            }
+        }
     }
+
 
     function closeDialog () {
         ctrl.dialog.hide();

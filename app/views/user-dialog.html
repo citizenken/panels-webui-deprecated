@@ -1,13 +1,17 @@
 <md-dialog aria-label="List dialog">
-  <md-dialog-content class="md-dialog-content">
-      {{ users }}
-    <md-input-container>
-      <label>User</label>
-        <md-select ng-change="main.addCollaborator()" ng-model="main.collaborators">
-          <md-option ng-repeat="user in users track by $index" value="{{user.id}}">
-          {{user.username}}
-          </md-option>
-        </md-select>
-    </md-input-container>
+  <md-dialog-content class="md-dialog-content md-padding autocomplete" layout="column">
+    <md-contact-chips
+        ng-model="ctrl.selectedUsers"
+        md-contacts="crtl.userSearch($query)"
+        md-contact-name="displayName"
+        md-contact-image="image"
+        md-contact-email="email"
+        md-require-match="true"
+        md-highlight-flags="i"
+        placeholder="Add">
+    </md-contact-chips>    
   </md-dialog-content>
+  <md-dialog-actions layout="row">
+    <md-button ng-click="ctrl.closeDialog()" class="md-primary">Close Dialog</md-button>
+  </md-dialog-actions>
 </md-dialog>
