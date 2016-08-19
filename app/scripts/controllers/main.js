@@ -9,8 +9,9 @@
  */
 angular.module('panelsApp')
   .controller('MainCtrl', [ 'onlineStatus', '$rootScope', '$scope', 'localFileService', '$timeout', 'firebaseService',
-    'lodash', 'userService', 'diffservice', 'FileSaver', 'Blob',
-    function (onlineStatus, $rootScope, $scope, localFileService, $timeout, firebaseService, lodash, userService, diffservice, FileSaver, Blob) { // jshint ignore:line
+    'lodash', 'userService', 'diffservice', 'FileSaver', 'Blob', '$location',
+    function (onlineStatus, $rootScope, $scope, localFileService, $timeout, firebaseService, lodash, // jshint ignore:line
+    userService, diffservice, FileSaver, Blob, $location) { // jshint ignore:line
     var ctrl = this;
     ctrl.scriptType = 'comicbook';
     ctrl.editorOptions = {
@@ -201,6 +202,7 @@ angular.module('panelsApp')
             ctrl.previewSize = 0;
         } else {
             ctrl.previewSize = 50;
+            $location.search('view', 'render');
             $rootScope.$emit('scriptContentChange', ctrl.mine);
         }
     }
@@ -225,6 +227,7 @@ angular.module('panelsApp')
     function toggleDiffRelated (fileId) {
         ctrl.previewSize = null;
         ctrl.theirs = ctrl.related[fileId];
+        $location.search('view', 'render');
     }
 
     function applyPatch (event, patch) {

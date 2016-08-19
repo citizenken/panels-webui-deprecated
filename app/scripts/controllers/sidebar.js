@@ -50,13 +50,22 @@ angular.module('panelsApp')
             var ctrl = this;
             ctrl.selectedUsers = [];
             ctrl.users = userService.users;
-            ctrl.closeDialog = function () {
-                $mdDialog.hide()
+            ctrl.closeDialog = closeDialog;
+            ctrl.userSearch = userSearch;
+
+            function closeDialog () {
+              $mdDialog.hide();
             }
 
-            ctrl.userSearch = function (query) {
-               var results = query ? lodash.filter(ctrl.users, {'username': criteria}): [];
-               return results;                
+            function userSearch (query) {
+              var results = query ? lodash.filter(ctrl.users, function(value, key){
+                if (key.indexOf('$') !== - 1) {
+                  return false;
+                } else {
+                  return (value.username.indexOf(query)) ? true : false;
+                }
+              }): [];
+              return results;
             }
         }
     }

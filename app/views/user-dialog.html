@@ -2,14 +2,14 @@
   <md-dialog-content class="md-dialog-content md-padding autocomplete" layout="column">
     <md-contact-chips
         ng-model="ctrl.selectedUsers"
-        md-contacts="crtl.userSearch($query)"
+        md-contacts="ctrl.userSearch($query)"
         md-contact-name="displayName"
         md-contact-image="image"
-        md-contact-email="email"
+        md-contact-email="username"
         md-require-match="true"
         md-highlight-flags="i"
         placeholder="Add">
-    </md-contact-chips>    
+    </md-contact-chips>
   </md-dialog-content>
   <md-dialog-actions layout="row">
     <md-button ng-click="ctrl.closeDialog()" class="md-primary">Close Dialog</md-button>
