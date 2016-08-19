@@ -1,13 +1,23 @@
 <md-dialog aria-label="List dialog">
-  <md-dialog-content class="md-dialog-content md-padding autocomplete" layout="column">
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Share With Users</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="cancel()">
+          <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+  <md-dialog-content class="md-dialog-content md-padding autocomplete" style="max-width:800px;max-height:810px;" layout="column">
     <md-contact-chips
         ng-model="ctrl.selectedUsers"
         md-contacts="ctrl.userSearch($query)"
         md-contact-name="displayName"
-        md-contact-image="image"
+        md-contact-image="photoURL"
         md-contact-email="username"
         md-require-match="true"
         md-highlight-flags="i"
+        filter-selected="ctrl.filterSelected"
         placeholder="Add">
     </md-contact-chips>
   </md-dialog-content>

@@ -49,11 +49,13 @@ angular.module('panelsApp')
         function DialogCtrl(userService, $mdDialog, lodash, $q) {
             var ctrl = this;
             ctrl.selectedUsers = [];
+            ctrl.filterSelected = true;
             ctrl.users = userService.users;
             ctrl.closeDialog = closeDialog;
             ctrl.userSearch = userSearch;
 
             function closeDialog () {
+              console.log(ctrl.selectedUsers);
               $mdDialog.hide();
             }
 
@@ -62,7 +64,7 @@ angular.module('panelsApp')
                 if (key.indexOf('$') !== - 1) {
                   return false;
                 } else {
-                  return (value.username.indexOf(query)) ? true : false;
+                  return (value.username.indexOf(query) || value.displayName.indexOf(query)) ? true : false;
                 }
               }): [];
               return results;
