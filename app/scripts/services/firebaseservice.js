@@ -268,12 +268,13 @@ angular.module('panelsApp')
         return localFileService.files;
       },
 
-      addCollaborator: function (collaborator) {
+      addCollaborator: function (file, collaborator) {
         var copy = {},
             self = this,
-            copyId;
+            copyId,
+            targetFile = localFileService.files[file.id];
 
-        angular.forEach(localFileService.currentFile, function (value, key) {
+        angular.forEach(targetFile, function (value, key) {
           if (key.indexOf('$') === -1 && key !== 'history') {
             copy[key] = value;
           }
@@ -289,29 +290,32 @@ angular.module('panelsApp')
           copy.collaborators = [];
         }
 
-        if (!localFileService.currentFile.related) {
-          localFileService.currentFile.related = [];
+        if (!targetFile.related) {
+          targetFile.related = [];
         }
 
-        if (!localFileService.currentFile.collaborators) {
-          localFileService.currentFile.collaborators = [];
+        if (!targetFile.collaborators) {
+          targetFile.collaborators = [];
         }
 
         copy.related.push(copy.id);
         copy.collaborators.push(localFileService.currentFile.author);
-        localFileService.currentFile.related.push(copyId);
-        localFileService.currentFile.collaborators.push(collaborator);
+        targetFile.related.push(copyId);
+        targetFile.collaborators.push(collaborator);
 
         copy.id = copyId;
         copy.author = collaborator;
 
-        return localFileService.currentFile.$save()
+        return targetFile.$save()
         .then(function (saved) {
           return $firebaseObject(saved).$loaded();
         })
         .then(function (loaded) {
-          localFileService.currentFile = loaded;
+          targetFile = loaded;
           return self.addRemoteFile(copy);
+        })
+        .catch(function (error) {
+          console.log(error);
         });
 
       },

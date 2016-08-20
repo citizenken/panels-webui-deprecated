@@ -286,6 +286,7 @@ angular.module('panelsApp')
     // $rootScope.$on('authStateChange', );
     $rootScope.$on('applyPatch', applyPatch);
     $rootScope.$on('onlineStatusChange', updateOnlineStatus);
+    $rootScope.$on('updateFiles', loadCtrlFiles);
 
     ctrl.init();
 

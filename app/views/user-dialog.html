@@ -1,14 +1,15 @@
-<md-dialog aria-label="List dialog">
+<md-dialog class="user-dialog" aria-label="List dialog">
     <md-toolbar>
       <div class="md-toolbar-tools">
         <h2>Share With Users</h2>
         <span flex></span>
-        <md-button class="md-icon-button" ng-click="cancel()">
-          <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+        <md-button class="md-icon-button" aria-label="close-dialog" ng-click="ctrl.closeDialog()">
+          <md-icon md-svg-icon="navigation:close"></md-icon>
         </md-button>
       </div>
     </md-toolbar>
-  <md-dialog-content class="md-dialog-content md-padding autocomplete" style="max-width:800px;max-height:810px;" layout="column">
+  <md-dialog-content class="md-dialog-content md-padding autocomplete" layout="column">
+    <p>Search for a user by name or email</p>
     <md-contact-chips
         ng-model="ctrl.selectedUsers"
         md-contacts="ctrl.userSearch($query)"
@@ -22,6 +23,7 @@
     </md-contact-chips>
   </md-dialog-content>
   <md-dialog-actions layout="row">
-    <md-button ng-click="ctrl.closeDialog()" class="md-primary">Close Dialog</md-button>
+    <md-button ng-click="ctrl.closeDialog()" class="md-primary">Close</md-button>
+    <md-button ng-click="ctrl.submitDialog()" class="md-primary">Submit</md-button>
   </md-dialog-actions>
 </md-dialog>

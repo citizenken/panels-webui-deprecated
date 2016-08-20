@@ -81,7 +81,7 @@ html, body {
   padding: 0;
 }
 
-.md-avatar-button img {
+.md-avatar-button .md-avatar {
   width: 105%;
 }
 
@@ -97,6 +97,23 @@ ins {
   background: #e6ffe6;
 }
 
+img {
+    vertical-align: baseline;
+}
+
+.md-chips .md-chip-input-container {
+    width: 50%;
+}
+
+.md-chips .md-chip-input-container md-autocomplete md-autocomplete-wrap {
+    width: 100%;
+}
+
+.user-dialog {
+    min-width: 800px;
+    max-width: 900px;
+    max-height:810px;
+}
 /* Responsive: Portrait tablets and up */
 /*@media screen and (min-width: 768px) {
   .container {

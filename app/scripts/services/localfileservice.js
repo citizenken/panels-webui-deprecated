@@ -47,7 +47,7 @@ angular.module('panelsApp')
         var id = utilityService.generateRandomId(20),
             file = {
               id: id,
-              title: undefined,
+              title: null,
               createdOn: Date.now(),
               modifiedOn: Date.now(),
               author: null,

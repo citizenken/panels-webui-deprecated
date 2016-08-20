@@ -42,10 +42,10 @@
                 <md-list-item class="md-3-line" ng-repeat="file in main.files track by $index" ng-click="main.changeFile(file.id)">
                     <div class="md-list-item-text">
                         <h3>{{ file.title || 'Untitled ' + file.type }}</h3>
-                        <md-button class="md-icon-button" ng-click="main.downloadFile()">
+                        <md-button class="md-icon-button" ng-click="main.downloadFile()" aria-label="download-file">
                             <md-icon md-svg-icon="file:file_download"></md-icon>
                         </md-button>
-                        <md-button ng-click="sidebar.showUserDialog($event)" class="md-icon-button">
+                        <md-button ng-click="sidebar.showUserDialog($event, file)" ng-disabled="!file.synced" aria-label="add-contributor" class="md-icon-button">
                             <md-icon md-svg-icon="social:person_add"></md-icon>
                         </md-button>
                         <p ng-if="file.id == main.mine.id">Current file</p>

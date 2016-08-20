@@ -8,12 +8,14 @@
  * Controller of the panelsApp
  */
 angular.module('panelsApp')
-  .controller('SidebarCtrl', [ 'onlineStatus', '$rootScope', '$scope', '$mdDialog', 'userService',
-    function (onlineStatus, $rootScope, $scope, $mdDialog, userService) {
+  .controller('SidebarCtrl', [ 'onlineStatus', '$rootScope', '$scope', '$mdDialog', 'userService', 'firebaseService',
+    function (onlineStatus, $rootScope, $scope, $mdDialog, userService, firebaseService) {
     var ctrl = this;
     ctrl.init = init;
     ctrl.isOpen = false;
+    ctrl.collabTarget = null;
     ctrl.showUserDialog = showUserDialog;
+    ctrl.addCollaborator = addCollaborator;
     ctrl.settings = {
         online: null
     };
@@ -31,7 +33,22 @@ angular.module('panelsApp')
         ctrl.isOpen = !ctrl.isOpen;
     }
 
-    function showUserDialog (ev) {
+    function addCollaborator (selectedUsers) {
+      var target = ctrl.collabTarget;
+        if (!target.collaborators || target.collaborators.indexOf(ctrl.collaborators) === -1) {
+          angular.forEach(selectedUsers, function(collaborator) {
+            firebaseService.addCollaborator(target, collaborator.id)
+            .then(function (copy) {
+                $rootScope.$emit('updateFiles');
+            });
+          });
+        } else {
+            console.log('already collaborate in file');
+        }
+    }
+
+    function showUserDialog (ev, fileId) {
+        ctrl.collabTarget = fileId;
         var dialogObj = $mdDialog.show({
             controller: DialogCtrl,
             controllerAs: 'ctrl',
@@ -39,32 +56,40 @@ angular.module('panelsApp')
             parent: angular.element(document.body),
             targetEvent: ev,
             clickOutsideToClose: true,
-            fullscreen: true
-        })
-        .then(function(answer) {
-          $scope.status = 'You said the information was "' + answer + '".';
-        }, function() {
-          $scope.status = 'You cancelled the dialog.';
+            fullscreen: true,
+            locals: {
+              addCollaborator: ctrl.addCollaborator
+            }
         });
-        function DialogCtrl(userService, $mdDialog, lodash, $q) {
+
+        function DialogCtrl(userService, $mdDialog, lodash, $q, $filter, addCollaborator) {
             var ctrl = this;
             ctrl.selectedUsers = [];
             ctrl.filterSelected = true;
             ctrl.users = userService.users;
             ctrl.closeDialog = closeDialog;
+            ctrl.submitDialog = submitDialog;
             ctrl.userSearch = userSearch;
 
             function closeDialog () {
-              console.log(ctrl.selectedUsers);
               $mdDialog.hide();
+            }
+
+            function submitDialog () {
+              $mdDialog.hide();
+              addCollaborator(ctrl.selectedUsers);
             }
 
             function userSearch (query) {
               var results = query ? lodash.filter(ctrl.users, function(value, key){
                 if (key.indexOf('$') !== - 1) {
                   return false;
-                } else {
-                  return (value.username.indexOf(query) || value.displayName.indexOf(query)) ? true : false;
+                } else if (value.username.indexOf(query) || value.displayName.indexOf(query)) {
+                  var emailLimit = 28,
+                      username = $filter('limitTo')(value.username, emailLimit);
+                  username = username + ((username.length < emailLimit) ? '' : '...');
+                  ctrl.users[key].username = username;
+                  return true;
                 }
               }): [];
               return results;
