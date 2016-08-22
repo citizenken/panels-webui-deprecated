@@ -43,10 +43,16 @@
                     <div class="md-list-item-text">
                         <h3>{{ file.title || 'Untitled ' + file.type }}</h3>
                         <md-button class="md-icon-button" ng-click="main.downloadFile()" aria-label="download-file">
+                            <md-tooltip md-direction="bottom">Download</md-tooltip>
                             <md-icon md-svg-icon="file:file_download"></md-icon>
                         </md-button>
-                        <md-button ng-click="sidebar.showUserDialog($event, file)" ng-disabled="!file.synced" aria-label="add-contributor" class="md-icon-button">
+                        <md-button class="md-icon-button" ng-click="sidebar.showUserDialog($event, file)" ng-disabled="!file.synced" aria-label="add-contributor" class="md-icon-button">
+                            <md-tooltip md-direction="bottom">Add Contributor</md-tooltip>
                             <md-icon md-svg-icon="social:person_add"></md-icon>
+                        </md-button>
+                        <md-button class="md-icon-button" aria-label="history" ng-click="sidebar.showHistoryDialog($event, file)">
+                            <md-tooltip md-direction="bottom">History</md-tooltip>
+                            <md-icon md-svg-icon="action:history"></md-icon>
                         </md-button>
                         <p ng-if="file.id == main.mine.id">Current file</p>
                     </div>

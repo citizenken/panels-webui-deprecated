@@ -1,0 +1,29 @@
+<md-dialog class="user-dialog" aria-label="List dialog">
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Revert To A Previous Version</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" aria-label="close-dialog" ng-click="ctrl.closeDialog()">
+          <md-icon md-svg-icon="navigation:close"></md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+  <md-dialog-content class="md-dialog-content md-padding autocomplete" layout="column">
+    <p>Search for a user by name or email</p>
+    <md-input-container>
+        <label>History</label>
+        <md-select ng-model="ctrl.selectedHistory">
+            <md-option ng-repeat="history in ctrl.history track by $index" ng-value="history">
+            {{ history.modifiedOn }}
+            </md-option>
+        </md-select>
+    </md-input-container>
+    <ul>
+      <li ng-repeat="(key, value) in ctrl.selectedHistory">{{ key }}: {{ value }}</li>
+    </ul>
+  </md-dialog-content>
+  <md-dialog-actions layout="row">
+    <md-button ng-click="ctrl.closeDialog()" class="md-primary">Close</md-button>
+    <md-button ng-click="ctrl.submitDialog()" class="md-primary">Submit</md-button>
+  </md-dialog-actions>
+</md-dialog>

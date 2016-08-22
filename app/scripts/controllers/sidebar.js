@@ -14,8 +14,11 @@ angular.module('panelsApp')
     ctrl.init = init;
     ctrl.isOpen = false;
     ctrl.collabTarget = null;
+    ctrl.historyTarget = null;
     ctrl.showUserDialog = showUserDialog;
+    ctrl.showHistoryDialog = showHistoryDialog;
     ctrl.addCollaborator = addCollaborator;
+    ctrl.revertHistory = revertHistory;
     ctrl.settings = {
         online: null
     };
@@ -31,6 +34,10 @@ angular.module('panelsApp')
 
     function openPanel () {
         ctrl.isOpen = !ctrl.isOpen;
+    }
+
+    function revertHistory (selectedHistory) {
+      console.log(selectedHistory);
     }
 
     function addCollaborator (selectedUsers) {
@@ -50,7 +57,7 @@ angular.module('panelsApp')
     function showUserDialog (ev, fileId) {
         ctrl.collabTarget = fileId;
         var dialogObj = $mdDialog.show({
-            controller: DialogCtrl,
+            controller: UserDialogCtrl,
             controllerAs: 'ctrl',
             templateUrl: 'views/user-dialog.html',
             parent: angular.element(document.body),
@@ -58,11 +65,12 @@ angular.module('panelsApp')
             clickOutsideToClose: true,
             fullscreen: true,
             locals: {
+              collabTarget: ctrl.collabTarget,
               addCollaborator: ctrl.addCollaborator
             }
         });
 
-        function DialogCtrl(userService, $mdDialog, lodash, $q, $filter, addCollaborator) {
+        function UserDialogCtrl(userService, $mdDialog, lodash, $q, $filter, collabTarget, addCollaborator) {
             var ctrl = this;
             ctrl.selectedUsers = [];
             ctrl.filterSelected = true;
@@ -84,6 +92,8 @@ angular.module('panelsApp')
               var results = query ? lodash.filter(ctrl.users, function(value, key){
                 if (key.indexOf('$') !== - 1) {
                   return false;
+                } else if (value.id === collabTarget.author) {
+                  return false;
                 } else if (value.username.indexOf(query) || value.displayName.indexOf(query)) {
                   var emailLimit = 28,
                       username = $filter('limitTo')(value.username, emailLimit);
@@ -97,9 +107,38 @@ angular.module('panelsApp')
         }
     }
 
+    function showHistoryDialog (ev, fileId) {
+        ctrl.historyTarget = fileId;
+        var dialogObj = $mdDialog.show({
+            controller: HistoryDialogCtrl,
+            controllerAs: 'ctrl',
+            templateUrl: 'views/history-dialog.html',
+            parent: angular.element(document.body),
+            targetEvent: ev,
+            clickOutsideToClose: true,
+            fullscreen: true,
+            locals: {
+              historyTarget: ctrl.historyTarget,
+              revertHistory: ctrl.revertHistory
+            }
+        });
 
-    function closeDialog () {
-        ctrl.dialog.hide();
+        function HistoryDialogCtrl(historyTarget, revertHistory) {
+            var ctrl = this;
+            ctrl.history = historyTarget.history;
+            ctrl.selectedHistory = null;
+            ctrl.closeDialog = closeDialog;
+            ctrl.submitDialog = submitDialog;
+
+            function closeDialog () {
+              $mdDialog.hide();
+            }
+
+            function submitDialog () {
+              $mdDialog.hide();
+              addCollaborator(ctrl.selectedHistory);
+            }
+        }
     }
 
 
